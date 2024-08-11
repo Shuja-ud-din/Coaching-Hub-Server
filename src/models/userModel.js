@@ -82,3 +82,12 @@ const verifyUserBody = Joi.object({
 const generateOTPBody = Joi.object({
     phoneNumber: Joi.string().required(),
 })
+export default User;
+export {
+    userSchema,
+    loginSchema,
+    updateSchema,
+    toggleValidityBody,
+    verifyUserBody,
+    generateOTPBody,
+}
