@@ -27,6 +27,7 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
       otp,
     });
 
+    //create customer and associate with support
     const customer = await Customer.create({
       user: user._id,
     });
@@ -35,6 +36,7 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
 
     await customer.save();
 
+    // generate jwt token
     const token = jsonwebtoken.sign(
       {
         userId: user._id,
@@ -43,6 +45,7 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
       env.JWT_SECRET
     );
 
+    //send otp by email
     sendMail(email, "OTP for verification", otp, (error, data) => {
       if (error) {
         console.log(error);
@@ -50,5 +53,7 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
         console.log("Email sent");
       }
     });
+
+    //Notify Admin
   } catch (error) {}
 };
