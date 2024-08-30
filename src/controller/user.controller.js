@@ -1,5 +1,5 @@
-import { ApiError } from "../errors/ApiError";
-import { createUser, loginUser } from "../services/user.service";
+import { ApiError } from "../errors/ApiError.js";
+import { createUser, loginUser } from "../services/user.service.js";
 
 const createNewUser = async (req, res) => {
   try {
