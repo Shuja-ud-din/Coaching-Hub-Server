@@ -1,5 +1,6 @@
 import { ApiError } from "../errors/ApiError.js";
 import { createUser, loginUser, verifyUser } from "../services/user.service.js";
+import sendMail from "../utils/sendMail.js";
 
 const createNewUser = async (req, res, next) => {
   try {
@@ -63,4 +64,37 @@ const userVerification = async (req, res, next) => {
     );
   }
 };
-export { createNewUser, loginPreviousUser, userVerification };
+const generateOTPForUser = async (req, res, next) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    // Call the service function to generate OTP
+    const { userEmail, otp } = await generateOTP({ phoneNumber });
+
+    // Send the OTP via email
+    await sendMail(userEmail, "OTP for Verification", otp, (err, data) => {
+      if (err) {
+        throw new ApiError(500, "Unable to send OTP");
+      } else {
+        res.json({
+          success: true,
+          message: "OTP Sent Successfully",
+        });
+      }
+    });
+  } catch (error) {
+    // Handle errors and send appropriate response
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+export {
+  createNewUser,
+  loginPreviousUser,
+  userVerification,
+  generateOTPForUser,
+};

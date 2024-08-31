@@ -144,4 +144,19 @@ const verifyUser = async (otp, phoneNumber) => {
     token,
   };
 };
-export { createUser, loginUser, verifyUser };
+
+const generateOTP = async ({ phoneNumber }) => {
+  const user = await User.findOne({ phoneNumber });
+
+  if (!user) {
+    throw new Error("User Not Found", 400);
+  }
+
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+  user.otp = otp;
+  await user.save();
+
+  return { userEmail: user.email, otp };
+};
+export { createUser, loginUser, verifyUser, generateOTP };
