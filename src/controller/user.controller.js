@@ -1,7 +1,7 @@
 import { ApiError } from "../errors/ApiError.js";
-import { createUser, loginUser } from "../services/user.service.js";
+import { createUser, loginUser, verifyUser } from "../services/user.service.js";
 
-const createNewUser = async (req, res) => {
+const createNewUser = async (req, res, next) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
     const user = await createUser({ name, email, phoneNumber, password });
@@ -11,21 +11,16 @@ const createNewUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    if (error instanceof ApiError) {
-      req.status(error.statusCode).json({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-      });
-    }
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
   }
 };
 
-const loginPreviousUser = async (req, res) => {
+const loginPreviousUser = async (req, res, next) => {
   try {
     const { phoneNumber, password } = req.body;
     const user = await loginUser({ phoneNumber, password });
@@ -35,17 +30,37 @@ const loginPreviousUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({
-        success: false,
-        message: error.message,
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-      });
-    }
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
   }
 };
-export { createNewUser, loginPreviousUser };
+const userVerification = async (req, res, next) => {
+  try {
+    const { otp, phoneNumber } = req.body;
+    const { user, token } = await verifyUser(otp, phoneNumber);
+
+    res.status(200).json({
+      success: true,
+      message: "User Verified Successfully",
+      user: {
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+export { createNewUser, loginPreviousUser, userVerification };

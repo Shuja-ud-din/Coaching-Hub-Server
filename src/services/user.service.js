@@ -7,90 +7,82 @@ import { sendNotificationToAdmin } from "../utils/sendNotification.js";
 import { ApiError } from "../errors/ApiError.js";
 import Provider from "../models/providerModel.js";
 import Admin from "../models/adminModel.js";
+
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
 
   if (emailExists || phNoExists) {
-    throw new ApiError(
-      409,
-      `${emailExists ? "Email" : "Phone number"} already taken`
+    throw new Error(
+      `${emailExists ? "Email" : "Phone number"} already taken`,
+      409
     );
   }
 
   const encryptedPassword = await bcrypt.hash(password, 10);
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-  try {
-    const user = await User.create({
-      name,
-      email,
-      password: encryptedPassword,
-      phoneNumber,
-      otp,
-    });
+  const user = await User.create({
+    name,
+    email,
+    password: encryptedPassword,
+    phoneNumber,
+    otp,
+  });
 
-    //create customer and associate with support
-    const customer = await Customer.create({
-      user: user._id,
-    });
-    const chat = await createSupportChat(user._id);
-    customer.chat.push(chat._id);
+  //create customer and associate with support
+  const customer = await Customer.create({
+    user: user._id,
+  });
+  const chat = await createSupportChat(user._id);
+  customer.chat.push(chat._id);
 
-    await customer.save();
+  await customer.save();
 
-    // generate jwt token
-    const token = jsonwebtoken.sign(
-      {
-        userId: user._id,
-        role: user.role,
-      },
-      env.JWT_SECRET
-    );
-
-    //send otp by email
-    sendMail(email, "OTP for verification", otp, (error, data) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent");
-      }
-    });
-
-    //Notify Admin
-    sendNotificationToAdmin("New User Registered", `${name} has registered`);
-    return {
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
+  // generate jwt token
+  const token = jsonwebtoken.sign(
+    {
+      userId: user._id,
       role: user.role,
-      id: user.id,
-      roleId: user.roleId,
-      token,
-    };
-  } catch (error) {
-    throw new ApiError(
-      500,
-      "An error occurred while creating the user",
-      false,
-      error.stack
-    );
-  }
+    },
+    env.JWT_SECRET
+  );
+
+  //send otp by email
+  sendMail(email, "OTP for verification", otp, (error, data) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent");
+    }
+  });
+
+  //Notify Admin
+  sendNotificationToAdmin("New User Registered", `${name} has registered`);
+  return {
+    name: user.name,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    role: user.role,
+    id: user.id,
+    roleId: user.roleId,
+    token,
+  };
 };
 
 const loginUser = async ({ phoneNumber, password }) => {
   const user = await User.findOne({ phoneNumber });
 
   if (!user) {
-    throw new ApiError(400, "Invalid credentials");
+    throw new Error("Invalid credentials", 400);
   }
   if (!user.isValid) {
-    throw new ApiError(400, "User is not valid");
+    throw new Error(400, "User is not valid", 400);
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    throw new ApiError(400, "Invalid credentials");
+    throw new Error("Invalid credentials", 400);
   }
 
   const token = jsonwebtoken.sign(
@@ -123,4 +115,33 @@ const loginUser = async ({ phoneNumber, password }) => {
     token,
   };
 };
-export { createUser, loginUser };
+
+const verifyUser = async (otp, phoneNumber) => {
+  const user = await User.findOne({ phoneNumber });
+
+  if (!user) {
+    throw new Error("User Not Found", 400);
+  }
+
+  if (user.otp !== otp) {
+    throw new Error("Invalid OTP", 400);
+  }
+
+  user.isValid = true;
+  user.otp = null;
+  await user.save();
+
+  const token = jsonwebtoken.sign(
+    {
+      userId: user._id,
+      role: user.role,
+    },
+    process.env.JWT_SECRET
+  );
+
+  return {
+    user,
+    token,
+  };
+};
+export { createUser, loginUser, verifyUser };
