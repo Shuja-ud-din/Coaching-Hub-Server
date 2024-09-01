@@ -7,6 +7,7 @@ import { sendNotificationToAdmin } from "../utils/sendNotification.js";
 import { ApiError } from "../errors/ApiError.js";
 import Provider from "../models/providerModel.js";
 import Admin from "../models/adminModel.js";
+import CPToken from "../models/CPToken.js";
 
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
@@ -159,4 +160,97 @@ const generateOTP = async ({ phoneNumber }) => {
 
   return { userEmail: user.email, otp };
 };
-export { createUser, loginUser, verifyUser, generateOTP };
+
+const forgetPassword = async ({ phoneNumber }) => {
+  const user = await User.findOne({ phoneNumber });
+
+  if (!user) {
+    throw new Error("User Not Found", 400);
+  }
+
+  if (user.role === "Admin") {
+    throw new Error(
+      "Admin Password Cannot be Reset. Contact Super Admin to Reset Your Password",
+      500
+    );
+  }
+
+  const tokenExists = await CPToken.findOne({ userId: user._id });
+  if (tokenExists) {
+    await CPToken.findByIdAndDelete(tokenExists._id);
+  }
+
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  const token = crypto.randomBytes(16).toString("hex");
+  const cpToken = await CPToken.create({
+    userId: user._id,
+    token,
+    otp,
+    expirationDate: new Date(Date.now() + 10 * 60 * 1000),
+  });
+
+  return await sendMail(
+    user.email,
+    "OTP for Verification",
+    otp,
+    (err, data) => {
+      if (err) {
+        throw new Error("Unable to send OTP", 500);
+      } else {
+        res.json({
+          success: true,
+          userId: user._id,
+          message: "OTP Sent Successfully",
+        });
+      }
+    }
+  );
+};
+
+const verifyForgetPasswordOTP = async ({ otp, userId }) => {
+  const cpToken = await CPToken.findOne({ userId });
+
+  if (!cpToken) {
+    throw new Error("OTP Not Found", 400);
+  }
+  if (cpToken.otp !== otp) {
+    throw new Error("Invalid OTP", 400);
+  }
+
+  return { userId, token: cpToken.token };
+};
+
+const resetPassword = async ({ token, userId, password }) => {
+  const cpToken = await CPToken.findOne({ token, userId });
+
+  if (!cpToken) {
+    throw new Error("Invalid Token", 400);
+  }
+  if (cpToken.expirationDate < new Date()) {
+    throw new Error("Token Expired", 400);
+  }
+  if (token !== cpToken.token) {
+    throw new Error("Invalid Token", 400);
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User Not Found", 400);
+  }
+
+  const encryptedPassword = await bcrypt.hash(password, 10);
+  user.password = encryptedPassword;
+  await user.save();
+
+  await CPToken.findByIdAndDelete(cpToken._id);
+};
+
+export {
+  createUser,
+  loginUser,
+  verifyUser,
+  generateOTP,
+  forgetPassword,
+  verifyForgetPasswordOTP,
+  resetPassword,
+};

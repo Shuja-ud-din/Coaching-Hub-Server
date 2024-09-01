@@ -1,5 +1,5 @@
 import express from "express";
-import { authRouter } from "./auth.js";
+import { authRoutes } from "./auth.js";
 import { PATH } from "../constants/routePaths.js";
 
 const routes = express.Router();
@@ -7,7 +7,7 @@ const routes = express.Router();
 const defaultRoutes = [
   {
     path: PATH.AUTH,
-    route: authRouter,
+    route: authRoutes,
   },
 ];
 

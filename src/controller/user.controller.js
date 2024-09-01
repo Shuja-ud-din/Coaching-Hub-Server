@@ -1,8 +1,15 @@
 import { ApiError } from "../errors/ApiError.js";
-import { createUser, loginUser, verifyUser } from "../services/user.service.js";
+import {
+  createUser,
+  forgetPassword,
+  loginUser,
+  resetPassword,
+  verifyForgetPasswordOTP,
+  verifyUser,
+} from "../services/user.service.js";
 import sendMail from "../utils/sendMail.js";
 
-const createNewUser = async (req, res, next) => {
+const createNewUserHandler = async (req, res, next) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
     const user = await createUser({ name, email, phoneNumber, password });
@@ -21,7 +28,7 @@ const createNewUser = async (req, res, next) => {
   }
 };
 
-const loginPreviousUser = async (req, res, next) => {
+const loginUserHandler = async (req, res, next) => {
   try {
     const { phoneNumber, password } = req.body;
     const user = await loginUser({ phoneNumber, password });
@@ -39,7 +46,7 @@ const loginPreviousUser = async (req, res, next) => {
     );
   }
 };
-const userVerification = async (req, res, next) => {
+const userVerificationHandler = async (req, res, next) => {
   try {
     const { otp, phoneNumber } = req.body;
     const { user, token } = await verifyUser(otp, phoneNumber);
@@ -64,14 +71,12 @@ const userVerification = async (req, res, next) => {
     );
   }
 };
-const generateOTPForUser = async (req, res, next) => {
+const generateOTPHandler = async (req, res, next) => {
   try {
     const { phoneNumber } = req.body;
 
-    // Call the service function to generate OTP
     const { userEmail, otp } = await generateOTP({ phoneNumber });
 
-    // Send the OTP via email
     await sendMail(userEmail, "OTP for Verification", otp, (err, data) => {
       if (err) {
         throw new ApiError(500, "Unable to send OTP");
@@ -83,7 +88,6 @@ const generateOTPForUser = async (req, res, next) => {
       }
     });
   } catch (error) {
-    // Handle errors and send appropriate response
     next(
       new ApiError(
         error.statusCode || 500,
@@ -92,9 +96,76 @@ const generateOTPForUser = async (req, res, next) => {
     );
   }
 };
+const forgetPasswordHandler = async (req, res, next) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    const user = await forgetPassword({ phoneNumber });
+
+    res.status(200).json({
+      success: true,
+      userId: user.userId,
+      message: user.message,
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+const verifyForgetPasswordOTPHandler = async (req, res, next) => {
+  try {
+    const { otp, userId } = req.body;
+    const { userId: IdOfUser, token } = await verifyForgetPasswordOTP({
+      otp,
+      userId,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP Verified Successfully",
+      userId: IdOfUser,
+      token,
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+
+const resetPasswordHandler = async (req, res, next) => {
+  try {
+    const { token, userId, password } = req.body;
+
+    await resetPassword({ token, userId, password });
+
+    res.status(200).json({
+      success: true,
+      message: "Password Reset Successfully",
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || 500,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+
 export {
-  createNewUser,
-  loginPreviousUser,
-  userVerification,
-  generateOTPForUser,
+  createNewUserHandler,
+  loginUserHandler,
+  userVerificationHandler,
+  generateOTPHandler,
+  forgetPasswordHandler,
+  verifyForgetPasswordOTPHandler,
+  resetPasswordHandler,
 };
