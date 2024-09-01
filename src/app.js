@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors("*"));
 
 app.get("/health", (req, res) => {
   res.status(200).send("Server is running");

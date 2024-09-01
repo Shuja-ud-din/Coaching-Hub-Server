@@ -21,6 +21,7 @@ import {
   resetPasswordBody,
   verifyForgetPasswordOTPBody,
 } from "../models/CPToken.js";
+
 const authRoutes = express.Router();
 
 authRoutes.post(

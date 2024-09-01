@@ -5,6 +5,7 @@ import Customer from "../models/customerModel.js";
 import Service from "../models/serviceModel.js";
 import Appointment from "../models/appointmentModel.js";
 import Provider from "../models/providerModel.js";
+import bcrypt from "bcryptjs";
 
 const addAdmin = async ({
   name,
@@ -112,6 +113,7 @@ const toggleAdminStatus = async (id, isValid) => {
   });
   return isValid;
 };
+
 const getAdminDashboardData = async () => {
   const noOfCustomers = await Customer.countDocuments();
   const noOfAppointments = await Appointment.countDocuments();

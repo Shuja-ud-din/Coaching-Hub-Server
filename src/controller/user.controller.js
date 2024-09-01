@@ -40,11 +40,9 @@ const loginUserHandler = async (req, res, next) => {
       token: user.token,
     });
   } catch (error) {
-    next(
-      new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
     );
   }
 };

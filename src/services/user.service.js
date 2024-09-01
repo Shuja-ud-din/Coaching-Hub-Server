@@ -7,6 +7,8 @@ import { sendNotificationToAdmin } from "../utils/sendNotification.js";
 import Provider from "../models/providerModel.js";
 import Admin from "../models/adminModel.js";
 import CPToken from "../models/CPToken.js";
+import bcrypt from "bcryptjs";
+import jsonwebtoken from "jsonwebtoken";
 
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
@@ -95,7 +97,7 @@ const loginUser = async ({ phoneNumber, password }) => {
     env.JWT_SECRET
   );
 
-  const roleUser = null;
+  let roleUser = null;
 
   if (user.role === "Customer") {
     roleUser = await Customer.findOne({ user: user._id });
