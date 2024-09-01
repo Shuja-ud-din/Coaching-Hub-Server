@@ -83,4 +83,4 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("onlineUsers", connectedUsers);
   });
 });
-export { app, io, server };
+export { io, server };
