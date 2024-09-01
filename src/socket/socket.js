@@ -2,7 +2,7 @@ import express from "express";
 import { env } from "../config/env.js";
 import { Server } from "socket.io";
 import { isTokenValid } from "../middlewares/authentication.js";
-const app = express();
+import app from "../app.js";
 
 const PORT = env.PORT || 5000;
 
