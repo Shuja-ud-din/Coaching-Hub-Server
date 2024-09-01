@@ -16,7 +16,8 @@ const createNewUserHandler = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "User Registered Successfully",
-      user,
+      user: user.user,
+      token: user.token,
     });
   } catch (error) {
     next(
@@ -35,7 +36,8 @@ const loginUserHandler = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "user logged in successfully",
-      user,
+      user: user.user,
+      token: user.token,
     });
   } catch (error) {
     next(

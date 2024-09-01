@@ -4,7 +4,6 @@ import { createSupportChat } from "./chat.service.js";
 import { env } from "../config/env.js";
 import sendMail from "../utils/sendMail.js";
 import { sendNotificationToAdmin } from "../utils/sendNotification.js";
-import { ApiError } from "../errors/ApiError.js";
 import Provider from "../models/providerModel.js";
 import Admin from "../models/adminModel.js";
 import CPToken from "../models/CPToken.js";
@@ -61,12 +60,14 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
   //Notify Admin
   sendNotificationToAdmin("New User Registered", `${name} has registered`);
   return {
-    name: user.name,
-    email: user.email,
-    phoneNumber: user.phoneNumber,
-    role: user.role,
-    id: user.id,
-    roleId: user.roleId,
+    user: {
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      id: user.id,
+      roleId: user.roleId,
+    },
     token,
   };
 };
@@ -105,14 +106,16 @@ const loginUser = async ({ phoneNumber, password }) => {
   }
 
   return {
-    name: user.name,
-    email: user.email,
-    phoneNumber: user.phoneNumber,
-    profilePicture: user.profilePicture,
-    roleId: roleUser?._id,
-    role: user.role,
-    id: user._id,
-    balance: roleUser?.balance,
+    user: {
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      profilePicture: user.profilePicture,
+      roleId: roleUser?._id,
+      role: user.role,
+      id: user._id,
+      balance: roleUser?.balance,
+    },
     token,
   };
 };
