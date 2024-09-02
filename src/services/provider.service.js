@@ -1,3 +1,4 @@
+import { isValidObjectId } from "mongoose";
 import Customer from "../models/customerModel";
 import Provider from "../models/providerModel";
 import User from "../models/userModel";
@@ -108,4 +109,132 @@ const getAllProviders = async (userId, role) => {
   return transformedData;
 };
 
-export { createProvider, getAllProviders };
+const getProviderById = async (id, user) => {
+  const provider = await Provider.findById({ _id: id })
+    .populate("user", "name email phoneNumber profilePicture")
+    .populate({
+      path: "appointments",
+      populate: [
+        {
+          path: "provider",
+          populate: {
+            path: "user",
+          },
+        },
+        {
+          path: "customer",
+          populate: {
+            path: "user",
+          },
+        },
+      ],
+    })
+    .populate("services")
+    .populate("certificates");
+
+  if (!provider) {
+    throw new Error("Provider not found", httpStatus.NOT_FOUND);
+  }
+
+  const appointments = provider.appointments.map((appointment, index) => ({
+    index: index + 1,
+    id: appointment._id,
+    provider: appointment.provider.user.name,
+    service: appointment.service.name,
+    status: appointment.status,
+    date: appointment.date,
+  }));
+
+  const services = provider.services.map((service) => ({
+    id: service._id,
+    name: service.name,
+    price: service.price,
+    description: service.description,
+    image: service.image,
+  }));
+  const certificates = provider.certificates.map((certificate) => ({
+    title: certificate.title,
+    document: certificate.document,
+  }));
+  const customer = await Customer.findOne({ user: user.userId });
+
+  const data = {
+    id: provider._id,
+    name: provider.user.name,
+    address: provider.address,
+    speciality: provider.speciality,
+    experience: provider.experience,
+    about: provider.about,
+    workingDays: provider.workingDays,
+    workingTimes: provider.workingTimes,
+    profilePicture: provider.user.profilePicture,
+    swarmLink: provider.swarmLink,
+    appointments,
+    services,
+    certificates,
+    rating: provider.rating,
+  };
+
+  if (user.role === "Admin" || user.role === "Super Admin") {
+    data.isValid = provider.user.isValid;
+    data.email = provider.user.email;
+    data.phoneNumber = provider.user.phoneNumber;
+  } else {
+    data.isFavorite = customer?.favorites.includes(provider._id);
+  }
+
+  return data;
+};
+const updateProvider = async (id, data) => {
+  const {
+    name,
+    email,
+    phoneNumber,
+    address,
+    speciality,
+    experience,
+    about,
+    workingDays,
+    workingTimes,
+    profilePicture,
+    swarmLink,
+    certificates, // Adding certificates to the input data
+  } = data;
+
+  if (!isValidObjectId(id)) {
+    throw new Error("Invalid Provider ID", httpStatus.BAD_REQUEST);
+  }
+
+  const provider = await Provider.findById(id);
+
+  if (!provider) {
+    throw new Error("Provider not found", httpStatus.NOT_FOUND);
+  }
+
+  await User.findByIdAndUpdate(provider.user, {
+    name,
+    email,
+    phoneNumber,
+    profilePicture,
+  });
+
+  provider.address = address;
+  provider.speciality = speciality;
+  provider.experience = experience;
+  provider.about = about;
+  provider.swarmLink = swarmLink;
+  provider.workingDays = workingDays;
+  provider.workingTimes = workingTimes;
+
+  if (certificates && Array.isArray(certificates)) {
+    provider.certificates = certificates.map((certificate) => ({
+      title: certificate.title,
+      document: certificate.document,
+    }));
+  }
+
+  await provider.save();
+
+  return { success: true, message: "Provider Updated Successfully" };
+};
+export { createProvider, getAllProviders, getProviderById, updateProvider };

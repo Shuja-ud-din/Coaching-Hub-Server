@@ -1,5 +1,10 @@
 import httpStatus from "http-status";
-import { createProvider, getAllProviders } from "../services/provider.service";
+import {
+  createProvider,
+  getAllProviders,
+  getProviderById,
+  updateProvider,
+} from "../services/provider.service";
 import { ApiError } from "../errors/ApiError";
 
 const createProviderHandler = async (req, res, next) => {
@@ -69,4 +74,49 @@ const getAllProvidersHandler = async (req, res, next) => {
   }
 };
 
-export { createProviderHandler, getAllProvidersHandler };
+const getProviderByIdHandler = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const data = await getProviderById(id, req.user);
+
+    res.status(httpStatus.OK).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+
+const updateProviderHandler = async (req, res, next) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  try {
+    const result = await updateProvider(id, data);
+
+    res.status(httpStatus.OK).json({
+      success: result.success,
+      message: result.message,
+    });
+  } catch (error) {
+    next(
+      new ApiError(
+        error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+        error.message || "Internal server error"
+      )
+    );
+  }
+};
+export {
+  createProviderHandler,
+  getAllProvidersHandler,
+  getProviderByIdHandler,
+  updateProviderHandler,
+};
