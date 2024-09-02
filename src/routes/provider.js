@@ -14,26 +14,26 @@ const providerRoutes = express.Router();
 
 providerRoutes.get(
   "/",
-  adminAuthentication,
+  // adminAuthentication,
   catchAsync(getAllProvidersHandler)
 );
 
 providerRoutes.post(
   "/",
-  adminAuthentication,
+  // adminAuthentication,
   bodyValidator(providerSchema),
   catchAsync(createProviderHandler)
 );
 
 providerRoutes.get(
   "/:id",
-  adminAuthentication,
+  // adminAuthentication,
   catchAsync(getProviderByIdHandler)
 );
 
 providerRoutes.put(
   "/:id",
-  adminAuthentication,
+  // adminAuthentication,
   catchAsync(updateProviderHandler)
 );
 

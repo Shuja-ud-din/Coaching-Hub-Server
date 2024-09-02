@@ -9,6 +9,7 @@ import Admin from "../models/adminModel.js";
 import CPToken from "../models/CPToken.js";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
+import { ApiError } from "../errors/ApiError.js";
 
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
@@ -33,13 +34,13 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
   });
 
   //create customer and associate with support
-  const customer = await Customer.create({
-    user: user._id,
-  });
-  const chat = await createSupportChat(user._id);
-  customer.chat.push(chat._id);
+  // const customer = await Customer.create({
+  //   user: user._id,
+  // });
+  // const chat = await createSupportChat(user._id);
+  // customer.chat.push(chat._id);
 
-  await customer.save();
+  // await customer.save();
 
   // generate jwt token
   const token = jsonwebtoken.sign(
@@ -78,15 +79,15 @@ const loginUser = async ({ phoneNumber, password }) => {
   const user = await User.findOne({ phoneNumber });
 
   if (!user) {
-    throw new Error("Invalid credentials", 400);
+    throw new ApiError(400, "Invalid credentials");
   }
-  if (!user.isValid) {
-    throw new Error(400, "User is not valid", 400);
-  }
+  // if (!user.isValid) {
+  //   throw new ApiError(400, "User is not valid");
+  // }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    throw new Error("Invalid credentials", 400);
+    throw new ApiError(400, "Invalid credentials");
   }
 
   const token = jsonwebtoken.sign(
@@ -94,7 +95,8 @@ const loginUser = async ({ phoneNumber, password }) => {
       userId: user._id,
       role: user.role,
     },
-    env.JWT_SECRET
+    env.JWT_SECRET,
+    { expiresIn: "1h" } // Add expiration time for security
   );
 
   let roleUser = null;
@@ -121,7 +123,6 @@ const loginUser = async ({ phoneNumber, password }) => {
     token,
   };
 };
-
 const verifyUser = async (otp, phoneNumber) => {
   const user = await User.findOne({ phoneNumber });
 
