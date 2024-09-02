@@ -41,6 +41,7 @@ const schema = mongoose.Schema({
     ],
     default: [],
   },
+
   reviews: {
     type: [
       {
@@ -74,6 +75,15 @@ const schema = mongoose.Schema({
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chat",
+      },
+    ],
+    default: [],
+  },
+  certificates: {
+    type: [
+      {
+        title: { type: String, required: true },
+        document: { type: String, required: true },
       },
     ],
     default: [],
