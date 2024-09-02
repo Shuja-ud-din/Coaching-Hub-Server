@@ -51,7 +51,7 @@ const getAllAdminsHandler = async (req, res, next) => {
   }
 };
 
-export const getAdminHandler = async (req, res, next) => {
+const getAdminHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     const adminData = await getAdmin(id);

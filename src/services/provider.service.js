@@ -1,8 +1,9 @@
 import { isValidObjectId } from "mongoose";
-import Customer from "../models/customerModel";
-import Provider from "../models/providerModel";
-import User from "../models/userModel";
-import { createSupportChat } from "./chat.service";
+import Customer from "../models/customerModel.js";
+import Provider from "../models/providerModel.js";
+import User from "../models/userModel.js";
+import bcrypt from "bcryptjs";
+import httpStatus from "http-status";
 
 const createProvider = async ({
   name,
@@ -53,8 +54,8 @@ const createProvider = async ({
     certificates,
   });
 
-  const chat = await createSupportChat(user._id);
-  provider.chats.push(chat._id);
+  // const chat = await createSupportChat(user._id);
+  // provider.chats.push(chat._id);
   await provider.save();
 };
 
@@ -235,6 +236,7 @@ const updateProvider = async (id, data) => {
 
   await provider.save();
 
-  return { success: true, message: "Provider Updated Successfully" };
+  return provider;
 };
+
 export { createProvider, getAllProviders, getProviderById, updateProvider };

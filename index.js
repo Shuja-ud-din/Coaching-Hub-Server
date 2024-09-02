@@ -1,16 +1,13 @@
 import { server } from "./src/socket/socket.js";
 
-const unexpectedErrorHandler = (error) => {
-  console.log(error);
-  exitHandler();
+const onCloseSignal = () => {
+  console.info("sigint received, shutting down");
+  server.close(() => {
+    console.info("server closed");
+    process.exit();
+  });
+  setTimeout(() => process.exit(1), 10000).unref(); // Force shutdown after 10s
 };
 
-process.on("uncaughtException", unexpectedErrorHandler);
-process.on("unhandledRejection", unexpectedErrorHandler);
-
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received");
-  if (server) {
-    server.close();
-  }
-});
+process.on("SIGINT", onCloseSignal);
+process.on("SIGTERM", onCloseSignal);

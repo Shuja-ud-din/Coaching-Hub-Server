@@ -91,7 +91,7 @@ const loginUser = async ({ phoneNumber, password }) => {
 
   const token = jsonwebtoken.sign(
     {
-      user: user._id,
+      userId: user._id,
       role: user.role,
     },
     env.JWT_SECRET

@@ -108,6 +108,14 @@ const providerSchema = Joi.object({
     start: Joi.string().required(),
     end: Joi.string().required(),
   }).required(),
+  certificates: Joi.array()
+    .items(
+      Joi.object({
+        title: Joi.string().required(),
+        document: Joi.string().required(),
+      })
+    )
+    .empty(),
 });
 
 const updateProviderBody = Joi.object({

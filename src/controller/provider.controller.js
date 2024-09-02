@@ -4,10 +4,10 @@ import {
   getAllProviders,
   getProviderById,
   updateProvider,
-} from "../services/provider.service";
-import { ApiError } from "../errors/ApiError";
+} from "../services/provider.service.js";
+import { ApiError } from "../errors/ApiError.js";
 
-const createProviderHandler = async (req, res, next) => {
+const createProviderHandler = async (req, res) => {
   try {
     const {
       name,
@@ -44,16 +44,16 @@ const createProviderHandler = async (req, res, next) => {
       message: "Provider created successfully",
     });
   } catch (error) {
-    next(
-      new ApiError(
-        error.statusCode || httpStatus.BAD_REQUEST,
-        error.message || "Internal server error"
-      )
+    console.log(error);
+
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
     );
   }
 };
 
-const getAllProvidersHandler = async (req, res, next) => {
+const getAllProvidersHandler = async (req, res) => {
   try {
     const userId = req.user.userId;
     const role = req.user.role;
@@ -65,16 +65,14 @@ const getAllProvidersHandler = async (req, res, next) => {
       data: provider,
     });
   } catch (error) {
-    next(
-      new ApiError(
-        error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "Internal server error"
     );
   }
 };
 
-const getProviderByIdHandler = async (req, res, next) => {
+const getProviderByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -85,16 +83,14 @@ const getProviderByIdHandler = async (req, res, next) => {
       data,
     });
   } catch (error) {
-    next(
-      new ApiError(
-        error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "Internal server error"
     );
   }
 };
 
-const updateProviderHandler = async (req, res, next) => {
+const updateProviderHandler = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
@@ -106,11 +102,9 @@ const updateProviderHandler = async (req, res, next) => {
       message: result.message,
     });
   } catch (error) {
-    next(
-      new ApiError(
-        error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+      error.message || "Internal server error"
     );
   }
 };
