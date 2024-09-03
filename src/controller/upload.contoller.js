@@ -38,13 +38,13 @@ const uploadDocument = async (req, res) => {
     );
   }
 
-  const response = await uploadFile(file.path);
+  // const response = await uploadFile(file);
 
-  console.log(response);
+  // console.log(response);
 
   res.status(httpStatus.OK).json({
     message: "File uploaded successfully",
-    url: response.url,
+    url: `${req.protocol}://${req.get("host")}/documents/${req.file.filename}`,
   });
 };
 
