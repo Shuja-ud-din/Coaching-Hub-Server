@@ -8,14 +8,14 @@ const uploadRoutes = express.Router();
 
 uploadRoutes.post(
   "/image",
-  authentication,
+  // authentication,
   fileUpload.single("image"),
   catchAsync(uploadImage)
 );
 
 uploadRoutes.post(
   "/document",
-  authentication,
+  // authentication,
   fileUpload.single("document"),
   catchAsync(uploadDocument)
 );

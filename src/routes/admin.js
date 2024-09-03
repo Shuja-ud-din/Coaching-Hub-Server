@@ -20,7 +20,11 @@ adminRoutes.post(
   bodyValidator(adminSchema),
   catchAsync(addAdminHandler)
 );
-adminRoutes.get("/", adminAuthentication, catchAsync(getAllAdminsHandler));
+adminRoutes.get(
+  "/",
+  // adminAuthentication,
+  catchAsync(getAllAdminsHandler)
+);
 
 adminRoutes.put(
   "/:id",
