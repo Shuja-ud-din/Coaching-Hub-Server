@@ -76,7 +76,7 @@ const getProviderByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const data = await getProviderById(id, req.user);
+    const data = await getProviderById(id, req);
 
     res.status(httpStatus.OK).json({
       success: true,
@@ -97,9 +97,9 @@ const updateProviderHandler = async (req, res) => {
   try {
     const result = await updateProvider(id, data);
 
-    res.status(httpStatus.OK).json({
-      success: result.success,
-      message: result.message,
+    res.status(200).json({
+      success: true,
+      message: "Provider Updated Successfully",
     });
   } catch (error) {
     throw new ApiError(

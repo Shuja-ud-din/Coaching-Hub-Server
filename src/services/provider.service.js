@@ -199,7 +199,7 @@ const updateProvider = async (id, data) => {
     workingTimes,
     profilePicture,
     swarmLink,
-    certificates, // Adding certificates to the input data
+    // certificates,
   } = data;
 
   if (!isValidObjectId(id)) {
@@ -227,12 +227,12 @@ const updateProvider = async (id, data) => {
   provider.workingDays = workingDays;
   provider.workingTimes = workingTimes;
 
-  if (certificates && Array.isArray(certificates)) {
-    provider.certificates = certificates.map((certificate) => ({
-      title: certificate.title,
-      document: certificate.document,
-    }));
-  }
+  // if (certificates && Array.isArray(certificates)) {
+  //   provider.certificates = certificates.map((certificate) => ({
+  //     title: certificate.title,
+  //     document: certificate.document,
+  //   }));
+  // }
 
   await provider.save();
 

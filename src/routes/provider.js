@@ -14,7 +14,7 @@ const providerRoutes = express.Router();
 
 providerRoutes.get(
   "/",
-  // adminAuthentication,
+  adminAuthentication,
   catchAsync(getAllProvidersHandler)
 );
 
