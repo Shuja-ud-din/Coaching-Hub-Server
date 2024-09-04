@@ -20,20 +20,20 @@ providerRoutes.get(
 
 providerRoutes.post(
   "/",
-  // adminAuthentication,
+  adminAuthentication,
   bodyValidator(providerSchema),
   catchAsync(createProviderHandler)
 );
 
 providerRoutes.get(
   "/:id",
-  // adminAuthentication,
+  adminAuthentication,
   catchAsync(getProviderByIdHandler)
 );
 
 providerRoutes.put(
   "/:id",
-  // adminAuthentication,
+  adminAuthentication,
   catchAsync(updateProviderHandler)
 );
 

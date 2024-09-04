@@ -16,46 +16,34 @@ import bodyValidator from "../validation/bodyValidator.js";
 const adminRoutes = express.Router();
 adminRoutes.post(
   "/",
-  // adminAuthentication,
+  adminAuthentication,
   bodyValidator(adminSchema),
   catchAsync(addAdminHandler)
 );
-adminRoutes.get(
-  "/",
-  // adminAuthentication,
-  catchAsync(getAllAdminsHandler)
-);
+adminRoutes.get("/", adminAuthentication, catchAsync(getAllAdminsHandler));
 
 adminRoutes.put(
   "/:id",
-  //   adminAuthentication,
+  adminAuthentication,
   bodyValidator(updateAdminSchema),
   catchAsync(updateAdmin)
 );
 
 adminRoutes.patch(
   "/:id",
-  //   adminAuthentication,
+  adminAuthentication,
   bodyValidator(toggleValidityBody),
   catchAsync(toggleAdminStatusHandler)
 );
 
-adminRoutes.get(
-  "/:id",
-  //  adminAuthentication,
-  catchAsync(getAdminHandler)
-);
+adminRoutes.get("/:id", adminAuthentication, catchAsync(getAdminHandler));
 
 adminRoutes.get(
   "/dashboard/details",
-  //   adminAuthentication,
+  adminAuthentication,
   catchAsync(getAdminDashboardHandler)
 );
 
-adminRoutes.get(
-  "/",
-  // adminAuthentication,
-  catchAsync(getAllAdminsHandler)
-);
+adminRoutes.get("/", adminAuthentication, catchAsync(getAllAdminsHandler));
 
 export { adminRoutes };
