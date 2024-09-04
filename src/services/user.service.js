@@ -95,8 +95,7 @@ const loginUser = async ({ phoneNumber, password }) => {
       userId: user._id,
       role: user.role,
     },
-    env.JWT_SECRET,
-    { expiresIn: "1h" } // Add expiration time for security
+    env.JWT_SECRET
   );
 
   let roleUser = null;

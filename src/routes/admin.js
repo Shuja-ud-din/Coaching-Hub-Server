@@ -6,6 +6,7 @@ import {
   getAdminHandler,
   getAllAdminsHandler,
   toggleAdminStatusHandler,
+  updateAdminHandler,
 } from "../controller/admin.controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { adminSchema, updateAdminSchema } from "../models/adminModel.js";
@@ -26,7 +27,7 @@ adminRoutes.put(
   "/:id",
   adminAuthentication,
   bodyValidator(updateAdminSchema),
-  catchAsync(updateAdmin)
+  catchAsync(updateAdminHandler)
 );
 
 adminRoutes.patch(
