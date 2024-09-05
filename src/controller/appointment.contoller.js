@@ -5,7 +5,7 @@ import {
   getAllAppointments,
   getAppointmentById,
 } from "../services/appointment.service.js";
-const addAppointment = async (req, res) => {
+const addAppointmentHandler = async (req, res) => {
   try {
     const { service, date } = req.body;
     const customerId = req.body.customer;
@@ -23,7 +23,7 @@ const addAppointment = async (req, res) => {
     );
   }
 };
-const getAppointments = async (req, res) => {
+const getAllAppointmentsHandler = async (req, res) => {
   try {
     const { user } = req;
     const appointments = await getAllAppointments(user);
@@ -54,4 +54,9 @@ const getAppointmentByIdHandler = async (req, res) => {
       error.message || "Internal server error"
     );
   }
+};
+export {
+  addAppointmentHandler,
+  getAllAppointmentsHandler,
+  getAppointmentByIdHandler,
 };

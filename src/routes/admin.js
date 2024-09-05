@@ -11,7 +11,6 @@ import {
 import { catchAsync } from "../utils/catchAsync.js";
 import { adminSchema, updateAdminSchema } from "../models/adminModel.js";
 import { toggleValidityBody } from "../models/userModel.js";
-import { updateAdmin } from "../services/admin.service.js";
 import bodyValidator from "../validation/bodyValidator.js";
 
 const adminRoutes = express.Router();

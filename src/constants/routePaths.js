@@ -3,6 +3,7 @@ const PATH = {
   ADMIN: "/admin",
   PROVIDER: "/provider",
   UPLOAD: "/upload",
+  APPOINTMENT: "/appointment",
 };
 
 export { PATH };

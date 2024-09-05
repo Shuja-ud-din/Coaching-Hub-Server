@@ -7,23 +7,32 @@ import {
   cancelAppointmentSchema,
 } from "../models/appointmentModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
+import {
+  addAppointmentHandler,
+  getAllAppointmentsHandler,
+  getAppointmentByIdHandler,
+} from "../controller/appointment.contoller.js";
 
 const appointmentRoutes = express.Router();
 
-appointmentRoutes.get("/", authentication, catchAsync(get));
+appointmentRoutes.get(
+  "/",
+  authentication,
+  catchAsync(getAllAppointmentsHandler)
+);
 
-// appointmentRoutes.get(
-//   "/:id",
-//   authentication,
-//   catchAsync(appointmentService.getAppointmentById)
-// );
+appointmentRoutes.get(
+  "/:id",
+  authentication,
+  catchAsync(getAppointmentByIdHandler)
+);
 
-// appointmentRoutes.post(
-//   "/",
-//   authentication,
-//   bodyValidator(appointmentSchema),
-//   catchAsync(appointmentService.addAppointment)
-// );
+appointmentRoutes.post(
+  "/",
+  authentication,
+  bodyValidator(appointmentSchema),
+  catchAsync(addAppointmentHandler)
+);
 
 // appointmentRoutes.put(
 //   "/cancel/:id",
