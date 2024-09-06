@@ -82,8 +82,8 @@ const schema = mongoose.Schema({
   certificates: {
     type: [
       {
-        title: { type: String, required: true },
-        document: { type: String, required: true },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Certificate",
       },
     ],
     default: [],

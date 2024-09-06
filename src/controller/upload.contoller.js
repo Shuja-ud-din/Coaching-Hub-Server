@@ -31,12 +31,18 @@ const uploadDocument = async (req, res) => {
   }
 
   // pdf or docx or doc
-  if (!file.originalname.match(/\.(pdf|docx|doc)$/)) {
+  if (!file.originalname.match(/\.(pdf|docx|doc|jpg|jpeg|png|gif)$/)) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "Please upload a document file (pdf, docx, doc)"
+      "Please upload a valid file (pdf, docx, doc, jpg, jpeg, png, gif)"
     );
   }
+  // if (!file.originalname.match(/\.(pdf|docx|doc)$/)) {
+  //   throw new ApiError(
+  //     httpStatus.BAD_REQUEST,
+  //     "Please upload a document file (pdf, docx, doc)"
+  //   );
+  // }
 
   // const response = await uploadFile(file);
 

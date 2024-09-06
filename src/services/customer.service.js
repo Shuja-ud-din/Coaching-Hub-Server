@@ -116,7 +116,7 @@ const updateCustomer = async (
   const customer = await Customer.findOne({ _id: id }).populate("user");
 
   if (!customer) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
+    throw new Error(httpStatus.NOT_FOUND, "Customer not found");
   }
 
   await User.findByIdAndUpdate(customer.user._id, {

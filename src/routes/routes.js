@@ -5,6 +5,7 @@ import { adminRoutes } from "./admin.js";
 import { providerRoutes } from "./provider.js";
 import { uploadRoutes } from "./upload.js";
 import appointmentRoutes from "./appointment.js";
+import certificateRoutes from "./certificate.js";
 
 const routes = express.Router();
 
@@ -28,6 +29,10 @@ const defaultRoutes = [
   {
     path: PATH.APPOINTMENT,
     route: appointmentRoutes,
+  },
+  {
+    path: PATH.CERTIFICATE,
+    route: certificateRoutes,
   },
 ];
 

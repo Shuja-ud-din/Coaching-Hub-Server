@@ -18,7 +18,6 @@ const createProvider = async ({
   workingTimes,
   profilePicture,
   swarmLink,
-  certificates,
 }) => {
   const emailExists = await User.findOne({ email });
 
@@ -51,12 +50,12 @@ const createProvider = async ({
     workingDays,
     workingTimes,
     swarmLink,
-    certificates,
   });
 
   // const chat = await createSupportChat(user._id);
   // provider.chats.push(chat._id);
   await provider.save();
+  return provider._id;
 };
 
 const getAllProviders = async (userId, role) => {
@@ -130,8 +129,8 @@ const getProviderById = async (id, user) => {
         },
       ],
     })
-    .populate("services")
-    .populate("certificates");
+    .populate("services");
+  // .populate("certificates");
 
   if (!provider) {
     throw new Error("Provider not found", httpStatus.NOT_FOUND);
@@ -153,10 +152,7 @@ const getProviderById = async (id, user) => {
     description: service.description,
     image: service.image,
   }));
-  const certificates = provider.certificates.map((certificate) => ({
-    title: certificate.title,
-    document: certificate.document,
-  }));
+
   const customer = await Customer.findOne({ user: user.userId });
 
   const data = {
@@ -172,7 +168,6 @@ const getProviderById = async (id, user) => {
     swarmLink: provider.swarmLink,
     appointments,
     services,
-    certificates,
     rating: provider.rating,
   };
 
@@ -199,7 +194,6 @@ const updateProvider = async (id, data) => {
     workingTimes,
     profilePicture,
     swarmLink,
-    // certificates,
   } = data;
 
   if (!isValidObjectId(id)) {
@@ -226,13 +220,6 @@ const updateProvider = async (id, data) => {
   provider.swarmLink = swarmLink;
   provider.workingDays = workingDays;
   provider.workingTimes = workingTimes;
-
-  // if (certificates && Array.isArray(certificates)) {
-  //   provider.certificates = certificates.map((certificate) => ({
-  //     title: certificate.title,
-  //     document: certificate.document,
-  //   }));
-  // }
 
   await provider.save();
 

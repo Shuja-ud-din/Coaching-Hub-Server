@@ -24,7 +24,7 @@ const createProviderHandler = async (req, res) => {
       swarmLink,
     } = req.body;
 
-    await createProvider({
+    const id = await createProvider({
       name,
       email,
       phoneNumber,
@@ -42,6 +42,7 @@ const createProviderHandler = async (req, res) => {
     res.status(httpStatus.CREATED).json({
       success: true,
       message: "Provider created successfully",
+      id,
     });
   } catch (error) {
     console.log(error);
