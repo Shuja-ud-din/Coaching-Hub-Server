@@ -5,6 +5,7 @@ const PATH = {
   UPLOAD: "/upload",
   APPOINTMENT: "/appointment",
   CERTIFICATE: "/certificate",
+  PRIVATE: "/private",
 };
 
 export { PATH };
