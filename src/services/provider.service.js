@@ -18,6 +18,7 @@ const createProvider = async ({
   workingTimes,
   profilePicture,
   swarmLink,
+  timeZone,
 }) => {
   const emailExists = await User.findOne({ email });
 
@@ -50,12 +51,14 @@ const createProvider = async ({
     workingDays,
     workingTimes,
     swarmLink,
+    timeZone,
   });
 
   // const chat = await createSupportChat(user._id);
-  // provider.chats.push(chat._id);
-  await provider.save();
-  return provider._id;
+  // // provider.chats.push(chat._id);
+  // await provider.save();
+
+  return provider;
 };
 
 const getAllProviders = async (userId, role) => {
@@ -129,8 +132,8 @@ const getProviderById = async (id, user) => {
         },
       ],
     })
-    .populate("services");
-  // .populate("certificates");
+    .populate("services")
+    .populate("certificates");
 
   if (!provider) {
     throw new Error("Provider not found", httpStatus.NOT_FOUND);
@@ -153,6 +156,12 @@ const getProviderById = async (id, user) => {
     image: service.image,
   }));
 
+  const certificates = provider.certificates.map((certificate) => ({
+    id: certificate._id,
+    title: certificate.title,
+    document: certificate.document,
+  }));
+
   const customer = await Customer.findOne({ user: user.userId });
 
   const data = {
@@ -169,6 +178,7 @@ const getProviderById = async (id, user) => {
     appointments,
     services,
     rating: provider.rating,
+    certificates,
   };
 
   if (user.role === "Admin" || user.role === "Super Admin") {

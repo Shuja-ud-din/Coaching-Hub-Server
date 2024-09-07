@@ -32,6 +32,10 @@ const schema = mongoose.Schema({
     start: { type: String, required: true },
     end: { type: String, required: true },
   },
+  timeZone: {
+    type: String,
+    required: true,
+  },
   appointments: {
     type: [
       {
@@ -66,10 +70,6 @@ const schema = mongoose.Schema({
     type: String,
     default: 0,
   },
-  swarmLink: {
-    type: String,
-    required: true,
-  },
   chats: {
     type: [
       {
@@ -103,7 +103,7 @@ const providerSchema = Joi.object({
   experience: Joi.number().required(),
   about: Joi.string().required(),
   workingDays: Joi.array().items(Joi.string()).required(),
-  swarmLink: Joi.string().required(),
+  timeZone: Joi.string().required(),
   workingTimes: Joi.object({
     start: Joi.string().required(),
     end: Joi.string().required(),
@@ -128,7 +128,6 @@ const updateProviderBody = Joi.object({
   experience: Joi.number().required(),
   about: Joi.string().required(),
   workingDays: Joi.array().items(Joi.string()).required(),
-  swarmLink: Joi.string().required(),
   workingTimes: Joi.object({
     start: Joi.string().required(),
     end: Joi.string().required(),

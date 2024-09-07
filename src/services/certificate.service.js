@@ -2,23 +2,11 @@ import Certificate from "../models/certificateModel.js";
 import Provider from "../models/providerModel.js";
 
 const addCertificate = async (providerId, title, document) => {
-  console.log("asdasdasd", providerId);
-
-  const provider = await Provider.findById(providerId);
-  if (!provider) {
-    throw new Error("Provider not found");
-  }
-
   const certificate = await Certificate.create({
     provider: providerId,
     title,
     document,
   });
-  if (!provider.certificates) {
-    provider.certificates = []; // Initialize certificates array if it's undefined
-  }
-  provider.certificates.push(certificate._id);
-  await provider.save();
 
   return certificate;
 };
