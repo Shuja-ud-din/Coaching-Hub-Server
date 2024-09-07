@@ -37,13 +37,17 @@ const createProviderHandler = async (req, res) => {
     await Promise.all(certificatePromises);
     await provider.save();
 
-    sendMail({
-      to: email,
-      subject: "Welcome to Coaching Hub",
-      text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
-      Phone Number: ${phoneNumber}
-      Password: ${password}`,
-    });
+    try {
+      sendMail({
+        to: email,
+        subject: "Welcome to Coaching Hub",
+        text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
+        Phone Number: ${phoneNumber}
+        Password: ${password}`,
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
     res.status(httpStatus.CREATED).json({
       success: true,
