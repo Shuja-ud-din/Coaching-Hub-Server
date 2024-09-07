@@ -6,6 +6,7 @@ export const env = {
   MONGO_URL: process.env.MONGO_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: process.env.PORT || 8000,
+  BACKEND_URL: process.env.BACKEND_URL,
   MAIL: {
     MAIL_SENDER: process.env.MAIL_SENDER,
     MAIL_PASSWORD: process.env.MAIL_PASSWORD,

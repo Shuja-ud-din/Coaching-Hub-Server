@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import { ApiError } from "../errors/ApiError.js";
 import { uploadFile } from "../services/upload.service.js";
+import { env } from "../config/env.js";
 
 const uploadImage = async (req, res) => {
   const { file } = req;
@@ -50,7 +51,7 @@ const uploadDocument = async (req, res) => {
 
   res.status(httpStatus.OK).json({
     message: "File uploaded successfully",
-    url: `${req.protocol}://${req.get("host")}/documents/${req.file.filename}`,
+    url: `${env.BACKEND_URL}/documents/${req.file.filename}`,
   });
 };
 
