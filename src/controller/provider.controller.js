@@ -18,7 +18,7 @@ import Provider from "../models/providerModel.js";
 const createProviderHandler = async (req, res) => {
   try {
     const { body } = req;
-    const { certificates, name, phoneNumber, password } = body;
+    const { certificates, name, phoneNumber, password, email } = body;
 
     const providerData = await createProvider(body);
 
@@ -37,17 +37,22 @@ const createProviderHandler = async (req, res) => {
     await Promise.all(certificatePromises);
     await provider.save();
 
-    try {
-      sendMail({
+    sendMail(
+      {
         to: email,
         subject: "Welcome to Coaching Hub",
         text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
         Phone Number: ${phoneNumber}
         Password: ${password}`,
-      });
-    } catch (e) {
-      console.log(e);
-    }
+      },
+      (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(info);
+        }
+      }
+    );
 
     res.status(httpStatus.CREATED).json({
       success: true,
@@ -86,7 +91,7 @@ const getProviderByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const data = await getProviderById(id, req);
+    const data = await getProviderById(id, req.user);
 
     res.status(httpStatus.OK).json({
       success: true,

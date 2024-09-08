@@ -167,10 +167,13 @@ const getProviderById = async (id, user) => {
   const data = {
     id: provider._id,
     name: provider.user.name,
+    email: provider.user.email,
+    phoneNumber: provider.user.phoneNumber,
     address: provider.address,
     speciality: provider.speciality,
     experience: provider.experience,
     about: provider.about,
+    isValid: provider.user.isValid,
     workingDays: provider.workingDays,
     workingTimes: provider.workingTimes,
     profilePicture: provider.user.profilePicture,
@@ -179,6 +182,7 @@ const getProviderById = async (id, user) => {
     services,
     rating: provider.rating,
     certificates,
+    timeZone: provider.timeZone,
   };
 
   if (user.role === "Admin" || user.role === "Super Admin") {
@@ -187,6 +191,10 @@ const getProviderById = async (id, user) => {
     data.phoneNumber = provider.user.phoneNumber;
   } else {
     data.isFavorite = customer?.favorites.includes(provider._id);
+
+    delete data.isValid;
+    delete data.email;
+    delete data.phoneNumber;
   }
 
   return data;
