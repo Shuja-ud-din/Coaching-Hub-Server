@@ -19,6 +19,7 @@ const createProvider = async ({
   profilePicture,
   swarmLink,
   timeZone,
+  language,
 }) => {
   const emailExists = await User.findOne({ email });
 
@@ -52,6 +53,7 @@ const createProvider = async ({
     workingTimes,
     swarmLink,
     timeZone,
+    language,
   });
 
   // const chat = await createSupportChat(user._id);

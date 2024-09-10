@@ -88,6 +88,11 @@ const schema = mongoose.Schema({
     ],
     default: [],
   },
+  language: {
+    type: String,
+    enum: ["English", "Arabic"],
+    default: "English",
+  },
 });
 
 const Provider = mongoose.model("Provider", schema);
@@ -116,6 +121,7 @@ const providerSchema = Joi.object({
       })
     )
     .empty(),
+  language: Joi.string().valid("English", "Arabic").required(),
 });
 
 const updateProviderBody = Joi.object({
