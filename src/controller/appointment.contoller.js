@@ -7,9 +7,9 @@ import {
 } from "../services/appointment.service.js";
 const addAppointmentHandler = async (req, res) => {
   try {
-    const { service, date } = req.body;
+    const { date } = req.body;
     const customerId = req.body.customer;
-    const appointment = await addAppointment(service, date, customerId);
+    const appointment = await addAppointment(date, customerId);
 
     res.status(201).json({
       success: true,

@@ -5,21 +5,25 @@ import Service from "../models/serviceModel.js";
 import sendMail from "../utils/sendMail.js";
 import { sendNotificationToAdmin } from "../utils/sendNotification.js";
 
-const addAppointment = async (serviceId, date, customerId) => {
+const addAppointment = async (
+  // serviceId,
+  date,
+  customerId
+) => {
   const customerExists = await Customer.findById(customerId);
   if (!customerExists) {
     throw new Error("Customer not found", 404);
   }
 
-  const serviceExists = await Service.findById(serviceId);
-  if (!serviceExists) {
-    throw new Error("Service not found", 404);
-  }
+  // const serviceExists = await Service.findById(serviceId);
+  // if (!serviceExists) {
+  //   throw new Error("Service not found", 404);
+  // }
 
   const appointment = await Appointment.create({
     customer: customerId,
     provider: serviceExists.provider,
-    service: serviceId,
+    // service: serviceId,
     date: new Date(date),
   });
 
@@ -38,7 +42,7 @@ const addAppointment = async (serviceId, date, customerId) => {
         model: "User",
       },
     })
-    .populate("service")
+    // .populate("service")
     .exec();
 
   const customer = appointmentDetails.customer;
@@ -57,7 +61,7 @@ const addAppointment = async (serviceId, date, customerId) => {
   const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
 
   const providerSubject = "New Appointment Scheduled";
-  const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} for ${appointmentDetails.service.name} on ${appointmentDetails.date}.`;
+  const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
 
   sendMail(customerEmail, customerSubject, customerText, (err, data) => {
     if (err) {
@@ -119,10 +123,10 @@ const getAllAppointments = async (user) => {
         model: "User",
       },
     })
-    .populate({
-      path: "service",
-      model: "Service",
-    })
+    // .populate({
+    //   path: "service",
+    //   model: "Service",
+    // })
     .exec();
 
   return appointments.map((appointment) => {
@@ -133,7 +137,7 @@ const getAllAppointments = async (user) => {
       providerId: appointment.provider._id,
       providerProfilePic: appointment.provider.user.profilePicture,
       swarmLink: appointment.provider.swarmLink,
-      service: appointment.service?.name || "",
+      // service: appointment.service?.name || "",
       status: appointment.status,
       date: appointment.date,
     };
@@ -156,7 +160,7 @@ const getAppointmentById = async (id) => {
         model: "User",
       },
     })
-    .populate("service")
+    // .populate("service")
     .exec();
 
   if (!appointment) {
@@ -165,7 +169,7 @@ const getAppointmentById = async (id) => {
 
   const customer = appointment.customer;
   const provider = appointment.provider;
-  const service = appointment.service;
+  // const service = appointment.service;
 
   const data = {
     id: appointment._id,
@@ -183,12 +187,12 @@ const getAppointmentById = async (id) => {
       phoneNumber: provider.user.phoneNumber,
       profilePicture: provider.profilePicture,
     },
-    service: {
-      id: service._id,
-      name: service.name,
-      description: service.description,
-      price: service.price,
-    },
+    // service: {
+    //   id: service._id,
+    //   name: service.name,
+    //   description: service.description,
+    //   price: service.price,
+    // },
     date: appointment.date,
     status: appointment.status,
   };

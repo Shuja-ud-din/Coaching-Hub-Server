@@ -12,11 +12,11 @@ const schema = mongoose.Schema({
     required: true,
     ref: "Provider",
   },
-  service: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Service",
-  },
+  // service: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  //   ref: "Service",
+  // },
   status: {
     type: String,
     required: true,
@@ -32,7 +32,7 @@ const Appointment = mongoose.model("Appointment", schema);
 
 const appointmentSchema = Joi.object({
   customer: Joi.string().required(),
-  service: Joi.string().required(),
+  // service: Joi.string().required(),
   date: Joi.date().required(),
 });
 
