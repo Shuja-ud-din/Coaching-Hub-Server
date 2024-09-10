@@ -18,7 +18,16 @@ import Provider from "../models/providerModel.js";
 const createProviderHandler = async (req, res) => {
   try {
     const { body } = req;
-    const { certificates, name, phoneNumber, password, email, language } = body;
+    const {
+      certificates,
+      name,
+      phoneNumber,
+      password,
+      email,
+      language,
+      sessionPrice,
+      sessionDuration,
+    } = body;
 
     const providerData = await createProvider(body);
 

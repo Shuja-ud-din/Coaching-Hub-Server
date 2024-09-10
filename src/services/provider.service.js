@@ -20,6 +20,8 @@ const createProvider = async ({
   swarmLink,
   timeZone,
   language,
+  sessionDuration,
+  sessionPrice,
 }) => {
   const emailExists = await User.findOne({ email });
 
@@ -54,6 +56,8 @@ const createProvider = async ({
     swarmLink,
     timeZone,
     language,
+    sessionPrice,
+    sessionDuration,
   });
 
   // const chat = await createSupportChat(user._id);
@@ -185,6 +189,9 @@ const getProviderById = async (id, user) => {
     rating: provider.rating,
     certificates,
     timeZone: provider.timeZone,
+    language: provider.language,
+    sessionPrice: provider.sessionPrice,
+    sessionDuration: provider.sessionDuration,
   };
 
   if (user.role === "Admin" || user.role === "Super Admin") {

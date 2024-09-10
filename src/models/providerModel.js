@@ -93,6 +93,14 @@ const schema = mongoose.Schema({
     enum: ["English", "Arabic"],
     default: "English",
   },
+  sessionDuration: {
+    type: String,
+    required: true,
+  },
+  sessionPrice: {
+    type: String,
+    required: true,
+  },
 });
 
 const Provider = mongoose.model("Provider", schema);
@@ -122,6 +130,8 @@ const providerSchema = Joi.object({
     )
     .empty(),
   language: Joi.string().valid("English", "Arabic").required(),
+  sessionDuration: Joi.string().required(),
+  sessionPrice: Joi.string().required(),
 });
 
 const updateProviderBody = Joi.object({
