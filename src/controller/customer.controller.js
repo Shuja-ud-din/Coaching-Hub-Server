@@ -24,7 +24,7 @@ const addCustomerHandler = async (req, res) => {
       message: "Customer Created Successfully",
     });
   } catch (error) {
-    new ApiError(
+    throw new ApiError(
       error.statusCode || httpStatus.BAD_REQUEST,
       error.message || "Internal server error"
     );
@@ -55,8 +55,9 @@ const getAllCustomersHandler = async (req, res, next) => {
 };
 
 const getCustomerByIdHandler = async (req, res) => {
+  const { id } = req.params;
   try {
-    const data = await getCustomerById();
+    const data = await getCustomerById(id);
 
     res.status(200).json({
       success: true,
@@ -99,7 +100,7 @@ const updateCustomerHandler = async (req, res, next) => {
       },
     });
   } catch (error) {
-    new ApiError(
+    throw new ApiError(
       error.statusCode || httpStatus.BAD_REQUEST,
       error.message || "Internal server error"
     );

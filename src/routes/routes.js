@@ -6,6 +6,7 @@ import { providerRoutes } from "./provider.js";
 import { uploadRoutes } from "./upload.js";
 import appointmentRoutes from "./appointment.js";
 import { privateRoutes } from "./private.js";
+import customerRoutes from "./customer.js";
 
 const routes = express.Router();
 
@@ -25,6 +26,10 @@ const defaultRoutes = [
   {
     path: PATH.UPLOAD,
     route: uploadRoutes,
+  },
+  {
+    path: PATH.CUSTOMER,
+    route: customerRoutes,
   },
   {
     path: PATH.APPOINTMENT,

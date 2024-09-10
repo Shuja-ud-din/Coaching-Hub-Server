@@ -2,8 +2,9 @@ import Customer from "../models/customerModel.js";
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import { createSupportChat } from "./chat.service.js";
+import httpStatus from "http-status";
 
-export const addCustomer = async ({
+const addCustomer = async ({
   name,
   email,
   phoneNumber,
@@ -15,10 +16,7 @@ export const addCustomer = async ({
   const phoneExists = await User.findOne({ phoneNumber });
 
   if (phoneExists || emailExists) {
-    throw new Error(
-      `${phoneExists ? "Phone Number" : "Email"} already taken`,
-      httpStatus.BAD_REQUEST
-    );
+    throw new Error(`${phoneExists ? "Phone Number" : "Email"} already taken`);
   }
 
   // Hash the password
@@ -35,14 +33,29 @@ export const addCustomer = async ({
     profilePicture,
   });
 
+  // Ensure user creation was successful
+  if (!user) {
+    throw new Error("Failed to create user");
+  }
+
   // Create the customer linked to the user
   const customer = await Customer.create({
     user: user._id,
   });
 
+  // Ensure customer creation was successful
+  if (!customer) {
+    throw new Error("Failed to create customer");
+  }
+
   // Create a support chat for the customer
-  const chat = await createSupportChat(user._id);
-  customer.chats.push(chat._id);
+
+  // const chat = await createSupportChat(user._id);
+  // if (!chat) {
+  //   throw new Error("Failed to create support chat");
+  // }
+
+  // customer.chats.push(chat._id);
   await customer.save();
 
   return {
