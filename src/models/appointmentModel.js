@@ -32,6 +32,7 @@ const Appointment = mongoose.model("Appointment", schema);
 
 const appointmentSchema = Joi.object({
   customer: Joi.string().required(),
+  provider: Joi.string().required(),
   // service: Joi.string().required(),
   date: Joi.date().required(),
 });

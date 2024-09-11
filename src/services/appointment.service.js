@@ -8,7 +8,8 @@ import { sendNotificationToAdmin } from "../utils/sendNotification.js";
 const addAppointment = async (
   // serviceId,
   date,
-  customerId
+  customerId,
+  providerId
 ) => {
   const customerExists = await Customer.findById(customerId);
   if (!customerExists) {
@@ -21,10 +22,11 @@ const addAppointment = async (
   // }
 
   const appointment = await Appointment.create({
-    customer: customerId,
-    provider: serviceExists.provider,
-    // service: serviceId,
     date: new Date(date),
+    customer: customerId,
+    provider: providerId,
+    // provider: serviceExists.provider,
+    // service: serviceId,
   });
 
   const appointmentDetails = await Appointment.findById(appointment._id)

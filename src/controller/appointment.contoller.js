@@ -5,12 +5,11 @@ import {
   getAllAppointments,
   getAppointmentById,
 } from "../services/appointment.service.js";
+
 const addAppointmentHandler = async (req, res) => {
   try {
-    const { date } = req.body;
-    const customerId = req.body.customer;
-    const appointment = await addAppointment(date, customerId);
-
+    const { date, customerId, providerId } = req.body;
+    const appointment = await addAppointment(date, customerId, providerId);
     res.status(201).json({
       success: true,
       appointmentId: appointment._id,
