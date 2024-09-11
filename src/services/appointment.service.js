@@ -12,19 +12,25 @@ const addAppointment = async (
   providerId
 ) => {
   const customerExists = await Customer.findById(customerId);
+  const providerExists = await Provider.findById(providerId);
+
   if (!customerExists) {
     throw new Error("Customer not found", 404);
   }
-
+  if (!providerExists) {
+    throw new Error("Provider not found", 404);
+  }
   // const serviceExists = await Service.findById(serviceId);
   // if (!serviceExists) {
   //   throw new Error("Service not found", 404);
   // }
-
+  const { sessionPrice, sessionDuration } = providerExists;
   const appointment = await Appointment.create({
     date: new Date(date),
     customer: customerId,
     provider: providerId,
+    sessionPrice,
+    sessionDuration,
     // provider: serviceExists.provider,
     // service: serviceId,
   });
@@ -60,31 +66,31 @@ const addAppointment = async (
   const providerEmail = appointmentDetails.provider.user.email;
 
   const customerSubject = "Appointment Scheduled";
-  const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
+  // const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
 
   const providerSubject = "New Appointment Scheduled";
-  const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
+  // const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
 
-  sendMail(customerEmail, customerSubject, customerText, (err, data) => {
-    if (err) {
-      console.error("Error sending email to customer:", err);
-    } else {
-      console.log("Customer email sent");
-    }
-  });
+  // sendMail(customerEmail, customerSubject, customerText, (err, data) => {
+  //   if (err) {
+  //     console.error("Error sending email to customer:", err);
+  //   } else {
+  //     console.log("Customer email sent");
+  //   }
+  // });
 
-  sendMail(providerEmail, providerSubject, providerText, (err, data) => {
-    if (err) {
-      console.error("Error sending email to provider:", err);
-    } else {
-      console.log("Provider email sent");
-    }
-  });
+  // sendMail(providerEmail, providerSubject, providerText, (err, data) => {
+  //   if (err) {
+  //     console.error("Error sending email to provider:", err);
+  //   } else {
+  //     console.log("Provider email sent");
+  //   }
+  // });
 
-  sendNotificationToAdmin(
-    "New Appointment",
-    `A new appointment has been created by ${appointmentDetails.customer.user.name}`
-  );
+  // sendNotificationToAdmin(
+  //   "New Appointment",
+  //   `A new appointment has been created by ${appointmentDetails.customer.user.name}`
+  // );
 
   return appointmentDetails;
 };

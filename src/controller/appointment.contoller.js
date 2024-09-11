@@ -8,20 +8,21 @@ import {
 
 const addAppointmentHandler = async (req, res) => {
   try {
-    const { date, customerId, providerId } = req.body;
-    const appointment = await addAppointment(date, customerId, providerId);
+    const { date, customer, provider } = req.body;
+    const appointment = await addAppointment(date, customer, provider);
     res.status(201).json({
       success: true,
       appointmentId: appointment._id,
       message: "Appointment created successfully",
     });
   } catch (error) {
-    new ApiError(
+    throw new ApiError(
       error.statusCode || httpStatus.BAD_REQUEST,
       error.message || "Internal server error"
     );
   }
 };
+
 const getAllAppointmentsHandler = async (req, res) => {
   try {
     const { user } = req;

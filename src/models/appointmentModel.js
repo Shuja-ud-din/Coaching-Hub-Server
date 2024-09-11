@@ -31,10 +31,10 @@ const schema = mongoose.Schema({
 const Appointment = mongoose.model("Appointment", schema);
 
 const appointmentSchema = Joi.object({
+  date: Joi.date().required(),
   customer: Joi.string().required(),
   provider: Joi.string().required(),
   // service: Joi.string().required(),
-  date: Joi.date().required(),
 });
 
 const cancelAppointmentSchema = Joi.object({

@@ -35,6 +35,7 @@ const schema = mongoose.Schema({
   timeZone: {
     type: String,
     required: true,
+    default: "UTC",
   },
   appointments: {
     type: [
@@ -90,16 +91,29 @@ const schema = mongoose.Schema({
   },
   language: {
     type: String,
-    enum: ["English", "Arabic"],
+    enum: [
+      "English",
+      "Arabic",
+      "Italian",
+      "Hindi",
+      "Russian",
+      "Filipino",
+      "Urdu",
+      "French",
+      "Spanish",
+      "German",
+    ],
     default: "English",
   },
   sessionDuration: {
     type: String,
     required: true,
+    default: "30",
   },
   sessionPrice: {
     type: String,
     required: true,
+    default: "10",
   },
 });
 
@@ -129,7 +143,20 @@ const providerSchema = Joi.object({
       })
     )
     .empty(),
-  language: Joi.string().valid("English", "Arabic").required(),
+  language: Joi.string()
+    .valid(
+      "English",
+      "Arabic",
+      "Italian",
+      "Hindi",
+      "Russian",
+      "Filipino",
+      "Urdu",
+      "French",
+      "Spanish",
+      "German"
+    )
+    .required(),
   sessionDuration: Joi.string().required(),
   sessionPrice: Joi.string().required(),
 });
