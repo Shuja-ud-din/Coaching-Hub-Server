@@ -1,4 +1,4 @@
-import Joi, { ref } from "joi";
+import Joi from "joi";
 import mongoose from "mongoose";
 
 const schema = mongoose.Schema({
