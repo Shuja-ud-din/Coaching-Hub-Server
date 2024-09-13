@@ -22,6 +22,11 @@ const createProvider = async ({
   language,
   sessionDuration,
   sessionPrice,
+  countryOfResidence,
+  nationality,
+  degreeName,
+  institute,
+  yearOfPassingDegree,
 }) => {
   const emailExists = await User.findOne({ email });
 
@@ -58,6 +63,11 @@ const createProvider = async ({
     language,
     sessionPrice,
     sessionDuration,
+    countryOfResidence,
+    nationality,
+    degreeName,
+    institute,
+    yearOfPassingDegree,
   });
 
   // const chat = await createSupportChat(user._id);

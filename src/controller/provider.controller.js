@@ -27,6 +27,11 @@ const createProviderHandler = async (req, res) => {
       language,
       sessionPrice,
       sessionDuration,
+      countryOfResidence,
+      nationality,
+      degreeName,
+      institute,
+      yearOfPassingDegree,
     } = body;
 
     const providerData = await createProvider(body);

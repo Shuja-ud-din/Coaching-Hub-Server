@@ -115,6 +115,26 @@ const schema = mongoose.Schema({
     required: true,
     default: "10",
   },
+  countryOfResidence: {
+    type: String,
+    required: true,
+  },
+  nationality: {
+    type: String,
+    required: true,
+  },
+  degreeName: {
+    type: String,
+    required: true,
+  },
+  institute: {
+    type: String,
+    required: true,
+  },
+  yearOfPassingDegree: {
+    type: String,
+    required: true,
+  },
 });
 
 const Provider = mongoose.model("Provider", schema);
@@ -159,6 +179,11 @@ const providerSchema = Joi.object({
     .required(),
   sessionDuration: Joi.string().required(),
   sessionPrice: Joi.string().required(),
+  countryOfResidence: Joi.string().required(),
+  nationality: Joi.string().required(),
+  degreeName: Joi.string().required(),
+  institute: Joi.string().required(),
+  yearOfPassingDegree: Joi.string().required(),
 });
 
 const updateProviderBody = Joi.object({
