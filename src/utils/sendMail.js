@@ -11,7 +11,9 @@ const sendMail = async ({ to, subject, text, html }, callback) => {
   };
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: env.MAIL.MAIL_HOST,
+    port: env.MAIL.MAIL_PORT,
+    secure: true,
 
     auth: {
       user: env.MAIL.MAIL_SENDER,
