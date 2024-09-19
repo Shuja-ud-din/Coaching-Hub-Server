@@ -1,6 +1,6 @@
 /node_modules
-public/uploads
-public/documents
+public/uploads/*
+public/documents/*
 
 .env
 
