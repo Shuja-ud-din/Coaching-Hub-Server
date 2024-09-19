@@ -90,7 +90,7 @@ const schema = mongoose.Schema({
     default: [],
   },
   language: {
-    type: String,
+    type: [String],
     enum: [
       "English",
       "Arabic",
@@ -103,7 +103,7 @@ const schema = mongoose.Schema({
       "Spanish",
       "German",
     ],
-    default: "English",
+    default: ["English"],
   },
   sessionDuration: {
     type: String,
@@ -114,6 +114,26 @@ const schema = mongoose.Schema({
     type: String,
     required: true,
     default: "10",
+  },
+  countryOfResidence: {
+    type: String,
+    required: true,
+  },
+  nationality: {
+    type: String,
+    required: true,
+  },
+  degreeName: {
+    type: String,
+    required: true,
+  },
+  institute: {
+    type: String,
+    required: true,
+  },
+  yearOfPassingDegree: {
+    type: String,
+    required: true,
   },
 });
 
@@ -143,22 +163,30 @@ const providerSchema = Joi.object({
       })
     )
     .empty(),
-  language: Joi.string()
-    .valid(
-      "English",
-      "Arabic",
-      "Italian",
-      "Hindi",
-      "Russian",
-      "Filipino",
-      "Urdu",
-      "French",
-      "Spanish",
-      "German"
+  language: Joi.array()
+    .items(
+      Joi.string().valid(
+        "English",
+        "Arabic",
+        "Italian",
+        "Hindi",
+        "Russian",
+        "Filipino",
+        "Urdu",
+        "French",
+        "Spanish",
+        "German"
+      )
     )
-    .required(),
+    .required()
+    .min(1),
   sessionDuration: Joi.string().required(),
   sessionPrice: Joi.string().required(),
+  countryOfResidence: Joi.string().required(),
+  nationality: Joi.string().required(),
+  degreeName: Joi.string().required(),
+  institute: Joi.string().required(),
+  yearOfPassingDegree: Joi.string().required(),
 });
 
 const updateProviderBody = Joi.object({
