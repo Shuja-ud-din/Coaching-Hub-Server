@@ -2,6 +2,9 @@
 public/uploads/*
 public/documents/*
 
+!public/uploads/.gitkeep
+!public/documents/.gitkeep
+
 .env
 
 ./.env
