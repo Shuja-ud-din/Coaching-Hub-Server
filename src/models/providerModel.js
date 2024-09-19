@@ -90,7 +90,7 @@ const schema = mongoose.Schema({
     default: [],
   },
   language: {
-    type: String,
+    type: [String],
     enum: [
       "English",
       "Arabic",
@@ -103,7 +103,7 @@ const schema = mongoose.Schema({
       "Spanish",
       "German",
     ],
-    default: "English",
+    default: ["English"],
   },
   sessionDuration: {
     type: String,
@@ -163,20 +163,23 @@ const providerSchema = Joi.object({
       })
     )
     .empty(),
-  language: Joi.string()
-    .valid(
-      "English",
-      "Arabic",
-      "Italian",
-      "Hindi",
-      "Russian",
-      "Filipino",
-      "Urdu",
-      "French",
-      "Spanish",
-      "German"
+  language: Joi.array()
+    .items(
+      Joi.string().valid(
+        "English",
+        "Arabic",
+        "Italian",
+        "Hindi",
+        "Russian",
+        "Filipino",
+        "Urdu",
+        "French",
+        "Spanish",
+        "German"
+      )
     )
-    .required(),
+    .required()
+    .min(1),
   sessionDuration: Joi.string().required(),
   sessionPrice: Joi.string().required(),
   countryOfResidence: Joi.string().required(),

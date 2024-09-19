@@ -12,6 +12,15 @@ const schema = mongoose.Schema({
     required: true,
     ref: "Provider",
   },
+  todos: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Todos",
+      },
+    ],
+    default: [],
+  },
   // service: {
   //   type: mongoose.Schema.Types.ObjectId,
   //   required: true,
