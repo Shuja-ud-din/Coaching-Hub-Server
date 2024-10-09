@@ -14,7 +14,7 @@ const io = new Server(server, {
   cors: {
     origin: "*",
   },
-  // method : ["GET", "POST"]
+  // method : ["GET", "POSTs"]
 });
 
 export let connectedUsers = [];

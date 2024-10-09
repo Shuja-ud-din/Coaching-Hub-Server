@@ -32,6 +32,25 @@ const updateTodo = async (todoId, data) => {
   return updatedTodo;
 };
 
+const completeTodo = async (todoId) => {
+  // First, check if the todo exists
+  const todoExists = await Todos.findById(todoId);
+  
+  if (!todoExists) {
+    throw new Error("Todo not found");
+  }
+
+  // Proceed to update the status if the todo exists
+  const completedTodo = await Todos.findByIdAndUpdate(
+    todoId,
+    { status: "Completed" },
+    { new: true }
+  );
+
+  return completedTodo;
+};
+
+
 const deleteTodo = async (todoId) => {
   const deletedTodo = await Todos.findByIdAndDelete(todoId);
 
@@ -49,4 +68,4 @@ const deleteTodo = async (todoId) => {
   return deletedTodo;
 };
 
-export { addTodos, getAllTodos, updateTodo, deleteTodo };
+export { addTodos, getAllTodos, updateTodo, deleteTodo,completeTodo };

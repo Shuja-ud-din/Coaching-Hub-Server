@@ -16,9 +16,9 @@ const todosSchema = mongoose.Schema({
     required: true,
   },
   status: {
-    type: Boolean,
+    type: String,
     required: true,
-    default: true,
+    default: "Pending",
   },
 });
 
@@ -27,12 +27,12 @@ const Todos = mongoose.model("Todos", todosSchema);
 const todos = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
-  status: Joi.boolean().required(),
+  status: Joi.string().required(),
 });
 const updateTodos = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
-  status: Joi.boolean().required(),
+  status: Joi.string().required(),
 });
 
 export default Todos;

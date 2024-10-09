@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { ApiError } from "../errors/ApiError.js";
 import {
   addTodos,
+  completeTodo,
   deleteTodo,
   getAllTodos,
   updateTodo,
@@ -46,6 +47,19 @@ const updateTodosHandler = async (req, res) => {
     );
   }
 };
+const completeTodoHandler = async (req, res) => {
+
+  try {
+    const { id: todoId } = req.params;
+     await completeTodo(todoId);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+};
 
 const deleteTodosHandler = async (req, res) => {
   try {
@@ -65,4 +79,5 @@ export {
   getAllTodosHandler,
   updateTodosHandler,
   deleteTodosHandler,
+  completeTodoHandler,
 };

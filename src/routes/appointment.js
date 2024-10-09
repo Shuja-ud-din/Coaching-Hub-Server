@@ -15,6 +15,7 @@ import {
 import { todos, updateTodos } from "../models/todosModel.js";
 import {
   addTodosHandler,
+  completeTodoHandler,
   deleteTodosHandler,
   getAllTodosHandler,
   updateTodosHandler,
@@ -64,6 +65,10 @@ appointmentRoutes.put(
   "/todos/:id",
   bodyValidator(updateTodos),
   catchAsync(updateTodosHandler)
+);
+appointmentRoutes.patch(
+  "/todos/:id",
+  catchAsync(completeTodoHandler)
 );
 appointmentRoutes.delete("/todos/:id", catchAsync(deleteTodosHandler));
 export default appointmentRoutes;
