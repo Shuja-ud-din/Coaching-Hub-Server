@@ -10,9 +10,9 @@ import {
 
 const addTodosHandler = async (req, res) => {
   try {
-    const { name, description, status } = req.body;
+    const { name, description, status,deadline } = req.body;
     const { id: appointmentId } = req.params;
-    const todo = await addTodos(appointmentId, name, description, status);
+    const todo = await addTodos(appointmentId, name, description, status,deadline);
     res.status(201).json({ success: true, data: todo });
   } catch (error) {
     throw new ApiError(

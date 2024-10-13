@@ -15,6 +15,10 @@ const todosSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  deadline: {
+    type: Date,
+    required: true,
+  },
   status: {
     type: String,
     required: true,
@@ -27,6 +31,7 @@ const Todos = mongoose.model("Todos", todosSchema);
 const todos = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
+  deadline:Joi.date().required(),
   status: Joi.string().required(),
 });
 const updateTodos = Joi.object({

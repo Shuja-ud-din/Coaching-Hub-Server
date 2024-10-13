@@ -1,7 +1,7 @@
 import Appointment from "../models/appointmentModel.js";
 import Todos from "../models/todosModel.js";
 
-const addTodos = async (appointmentId, name, description, status) => {
+const addTodos = async (appointmentId, name, description, status,deadline) => {
   const appointmentExists = await Appointment.findById(appointmentId);
   if (!appointmentExists) {
     throw new Error("Appointment not found", 404);
@@ -10,6 +10,7 @@ const addTodos = async (appointmentId, name, description, status) => {
     name,
     description,
     status,
+    deadline,
     appointment: appointmentId,
   });
   appointmentExists.todos.push(newTodo._id);
