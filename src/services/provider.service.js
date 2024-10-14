@@ -77,6 +77,64 @@ const createProvider = async ({
   return provider;
 };
 
+// const getAllProviders = async (req, res) => {
+//   let customer = null;
+//   if (req.user.role === "Customer") {
+//     customer = await Customer.findOne({ user: req.user.userId });
+//   }
+
+//   try {
+//     let providers = await Provider.find().populate(
+//       "user",
+//       "name email phoneNumber isValid profilePicture"
+//     );
+
+//     if (req.user.role === "Customer" || req.user.role === "Provider") {
+//       providers = providers.filter((provider) => provider.user.isValid);
+//     }
+
+//     let transformedData = [];
+
+//     if (req.user.role === "Admin" || req.user.role === "Super Admin") {
+//       transformedData = providers.map((provider) => {
+//         return {
+//           id: provider._id,
+//           name: provider.user.name,
+//           email: provider.user.email,
+//           phoneNumber: provider.user.phoneNumber,
+//           profilePicture: provider.user.profilePicture,
+//           address: provider.address,
+//           speciality: provider.speciality,
+//           experience: provider.experience,
+//           isValid: provider.user.isValid,
+//           rating: provider.rating,
+//         };
+//       });
+//     } else {
+//       transformedData = providers.map((provider) => {
+//         return {
+//           id: provider._id,
+//           name: provider.user.name,
+//           profilePicture: provider.user.profilePicture,
+//           address: provider.address,
+//           speciality: provider.speciality,
+//           experience: provider.experience,
+//           isValid: provider.user.isValid,
+//           rating: provider.rating,
+//           isFavorite: !!customer?.favorites.includes(provider._id),
+//         };
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: transformedData,
+//     });
+//   } catch (e) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, e.message);
+//   }
+// };
+
 const getAllProviders = async (userId, role) => {
   let customer = null;
   if (role === "Customer") {
