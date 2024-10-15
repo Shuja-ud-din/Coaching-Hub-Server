@@ -4,6 +4,7 @@ import {
   addAppointment,
   getAllAppointments,
   getAppointmentById,
+  markAppointmentAsConducted,
 } from "../services/appointment.service.js";
 
 const addAppointmentHandler = async (req, res) => {
@@ -55,8 +56,23 @@ const getAppointmentByIdHandler = async (req, res) => {
     );
   }
 };
+
+const markAppointmentAsConductedHandler = async(req,res)=>{
+  try{
+    const{id:appointmentId} = req.params;
+    await markAppointmentAsConducted(appointmentId)
+    res.status(200).json({ success: true });
+  }catch(error){
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+}
+
 export {
   addAppointmentHandler,
   getAllAppointmentsHandler,
   getAppointmentByIdHandler,
+  markAppointmentAsConductedHandler,
 };

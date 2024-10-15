@@ -47,7 +47,7 @@ export const adminAuthentication = async (req, res, next) => {
   if (token) {
     try {
       const userObj = jwt.verify(token, env.JWT_SECRET);
-      if (userObj.role === "Admin" || userObj.role === "Super Admin") {
+      if (userObj.role === "Admin" || userObj.role === "Super Admin"|| userObj.role === "Customer") {
         console.log(userObj);
 
         const user = await User.findOne({ _id: userObj.userId });

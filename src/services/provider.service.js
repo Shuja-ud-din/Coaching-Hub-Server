@@ -206,7 +206,7 @@ const getProviderById = async (id, user) => {
         },
       ],
     })
-    .populate("services")
+    // .populate("services")
     .populate("certificates");
 
   if (!provider) {
@@ -217,18 +217,18 @@ const getProviderById = async (id, user) => {
     index: index + 1,
     id: appointment._id,
     provider: appointment.provider.user.name,
-    service: appointment.service.name,
+    // service: appointment.service.name,
     status: appointment.status,
     date: appointment.date,
   }));
 
-  const services = provider.services.map((service) => ({
-    id: service._id,
-    name: service.name,
-    price: service.price,
-    description: service.description,
-    image: service.image,
-  }));
+  // const services = provider.services.map((service) => ({
+  //   id: service._id,
+  //   name: service.name,
+  //   price: service.price,
+  //   description: service.description,
+  //   image: service.image,
+  // }));
 
   const certificates = provider.certificates.map((certificate) => ({
     id: certificate._id,
@@ -253,7 +253,7 @@ const getProviderById = async (id, user) => {
     profilePicture: provider.user.profilePicture,
     swarmLink: provider.swarmLink,
     appointments,
-    services,
+    // services,
     rating: provider.rating,
     certificates,
     timeZone: provider.timeZone,

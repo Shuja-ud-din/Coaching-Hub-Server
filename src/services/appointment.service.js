@@ -208,4 +208,17 @@ const getAppointmentById = async (id) => {
   return data;
 };
 
-export { addAppointment, getAllAppointments, getAppointmentById };
+const markAppointmentAsConducted = async(appointmentId) => {
+  const appointmentExists = await Appointment.findById(appointmentId);
+  // if(!appointmentExists){
+  //   throw new Error("Appoitment not found");
+  // }
+  const conductedAppointment =  await Appointment.findByIdAndUpdate(
+    appointmentId,
+    {status : "Conducted"},
+    {new: true}
+  )
+  return conductedAppointment
+}
+
+export { addAppointment, getAllAppointments, getAppointmentById,markAppointmentAsConducted };

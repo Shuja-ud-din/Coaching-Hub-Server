@@ -58,15 +58,15 @@ const schema = mongoose.Schema({
 
     default: [],
   },
-  services: {
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Service",
-      },
-    ],
-    default: [],
-  },
+  // services: {
+  //   type: [
+  //     {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: "Service",
+  //     },
+  //   ],
+  //   default: [],
+  // },
   rating: {
     type: String,
     default: 0,

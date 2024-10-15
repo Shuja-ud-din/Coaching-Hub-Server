@@ -11,6 +11,7 @@ import {
   addAppointmentHandler,
   getAllAppointmentsHandler,
   getAppointmentByIdHandler,
+  markAppointmentAsConductedHandler,
 } from "../controller/appointment.contoller.js";
 import { todos, updateTodos } from "../models/todosModel.js";
 import {
@@ -69,6 +70,10 @@ appointmentRoutes.put(
 appointmentRoutes.patch(
   "/todos/:id",
   catchAsync(completeTodoHandler)
+);
+appointmentRoutes.patch(
+  "/:id",
+  catchAsync(markAppointmentAsConductedHandler)
 );
 appointmentRoutes.delete("/todos/:id", catchAsync(deleteTodosHandler));
 export default appointmentRoutes;
