@@ -1,16 +1,18 @@
 import express from "express";
-import { adminAuthentication } from "../middlewares/authentication.js";
+import { adminAuthentication, authentication } from "../middlewares/authentication.js";
 import {
   addCertificateHandler,
+  addReviewHandler,
   createProviderHandler,
   deleteCertificateHandler,
   getAllProvidersHandler,
   getProviderByIdHandler,
+  getProviderReviewsHandler,
   updateCertificateHandler,
   updateProviderHandler,
 } from "../controller/provider.controller.js";
 import bodyValidator from "../validation/bodyValidator.js";
-import { providerSchema } from "../models/providerModel.js";
+import { addReviewBody, providerSchema } from "../models/providerModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { certificate, updateCertificate } from "../models/certificateModel.js";
 
@@ -40,7 +42,18 @@ providerRoutes.put(
   adminAuthentication,
   catchAsync(updateProviderHandler)
 );
-
+providerRoutes.post(
+  "/addReview/:id",
+  authentication,
+  
+  bodyValidator(addReviewBody),
+  catchAsync(addReviewHandler)
+);
+providerRoutes.get(
+  "/reviews/:id",
+  authentication,
+  catchAsync(getProviderReviewsHandler)
+);
 providerRoutes.post(
   "/certificate/:providerId",
   bodyValidator(certificate),

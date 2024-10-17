@@ -9,6 +9,7 @@ import {
 import { catchAsync } from "../utils/catchAsync.js";
 import {
   addAppointmentHandler,
+  cancelAppointmentHandler,
   getAllAppointmentsHandler,
   getAppointmentByIdHandler,
   markAppointmentAsConductedHandler,
@@ -43,12 +44,12 @@ appointmentRoutes.post(
   catchAsync(addAppointmentHandler)
 );
 
-// appointmentRoutes.put(
-//   "/cancel/:id",
-//   authentication,
-//   bodyValidator(cancelAppointmentSchema),
-//   catchAsync(appointmentService.cancelAppointment)
-// );
+appointmentRoutes.put(
+  "/cancel/:id",
+  // authentication,
+  // bodyValidator(cancelAppointmentSchema),
+  catchAsync(cancelAppointmentHandler)
+);
 // appointmentRoutes.patch(
 //   "/checkIn/:id",
 //   authentication,

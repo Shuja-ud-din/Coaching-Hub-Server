@@ -2,6 +2,7 @@ import { ApiError } from "../errors/ApiError.js";
 import httpStatus from "http-status";
 import {
   addAppointment,
+  cancelAppointmentService,
   getAllAppointments,
   getAppointmentById,
   markAppointmentAsConducted,
@@ -57,6 +58,19 @@ const getAppointmentByIdHandler = async (req, res) => {
   }
 };
 
+ const cancelAppointmentHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const result = await cancelAppointmentService(id, reason);
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+}
+
 const markAppointmentAsConductedHandler = async(req,res)=>{
   try{
     const{id:appointmentId} = req.params;
@@ -74,5 +88,6 @@ export {
   addAppointmentHandler,
   getAllAppointmentsHandler,
   getAppointmentByIdHandler,
+  cancelAppointmentHandler,
   markAppointmentAsConductedHandler,
 };

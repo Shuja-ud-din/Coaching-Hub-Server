@@ -276,6 +276,7 @@ const getProviderById = async (id, user) => {
 
   return data;
 };
+
 const updateProvider = async (id, data) => {
   const {
     name,
@@ -321,4 +322,67 @@ const updateProvider = async (id, data) => {
   return provider;
 };
 
-export { createProvider, getAllProviders, getProviderById, updateProvider };
+const getProviderReviews = async (id) => {
+
+  if (!isValidObjectId(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Provider ID");
+  }
+
+    const provider = await Provider.findById(id).populate({
+      path: "reviews",
+      populate: {
+        path: "reviewedBy",
+      },
+    });
+
+    if (!provider) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Provider not found");
+    }
+
+    const reviews = provider.reviews.map((review) => {
+      return {
+        rating: review.rating,
+        comment: review.comment,
+        reviewedBy: {
+          id: review.reviewedBy._id,
+          name: review.reviewedBy.name,
+          profilePicture: review.reviewedBy.profilePicture,
+        },
+      };
+    });
+
+    return reviews
+};
+
+const addReview = async (id, rating,comment,userId,role) => {
+
+
+  if (!isValidObjectId(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Provider ID");
+  }
+
+  if (role !== "Customer") {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "Only customers can add reviews"
+    );
+  }
+
+    const provider = await Provider.findById(id);
+
+    if (!provider) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Provider not found");
+    }
+
+    provider.reviews.push({
+      rating,
+      comment,
+      reviewedBy: userId,
+    });
+
+    await provider.save();
+
+ 
+};
+
+export { createProvider, getAllProviders, getProviderById, updateProvider,getProviderReviews,addReview };

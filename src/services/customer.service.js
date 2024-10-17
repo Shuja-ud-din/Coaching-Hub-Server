@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import { createSupportChat } from "./chat.service.js";
 import httpStatus from "http-status";
+import Provider from '../models/providerModel.js'
 
 const addCustomer = async ({
   name,
@@ -61,6 +62,38 @@ const addCustomer = async ({
   return {
     userId: user._id,
     customerId: customer._id,
+  };
+};
+const addFavorite= async (userId, providerId) => {
+  // Find the customer by user ID
+  const customer = await Customer.findOne({ user: userId });
+
+  if (!customer) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
+  }
+
+  // Validate the provider by its ID
+  const isProviderValid = await Provider.findOne({ _id: providerId });
+
+  if (!isProviderValid) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Provider not found");
+  }
+
+  // Check if the provider is already in the favorites list
+  if (customer.favorites.includes(providerId)) {
+    return {
+      success: true,
+      message: "Provider already exists in favorites",
+    };
+  }
+
+  // Add the provider to favorites
+  customer.favorites.push(providerId);
+  await customer.save();
+
+  return {
+    success: true,
+    message: "Provider added to favorites successfully",
   };
 };
 
@@ -145,4 +178,4 @@ const updateCustomer = async (
   return updatedCustomer;
 };
 
-export { addCustomer, getAllCustomers, getCustomerById, updateCustomer };
+export { addCustomer, getAllCustomers, getCustomerById, addFavorite,updateCustomer };

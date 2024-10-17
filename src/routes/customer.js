@@ -6,6 +6,7 @@ import {
 import { catchAsync } from "../utils/catchAsync.js";
 import {
   addCustomerHandler,
+  addFavoriteHandler,
   getAllCustomersHandler,
   getCustomerByIdHandler,
   updateCustomerHandler,
@@ -36,6 +37,11 @@ customerRoutes.get(
   "/:id",
   adminAuthentication,
   catchAsync(getCustomerByIdHandler)
+);
+customerRoutes.patch(
+  "/addFavorite/:id",
+  authentication,
+  catchAsync(addFavoriteHandler)
 );
 
 customerRoutes.get(

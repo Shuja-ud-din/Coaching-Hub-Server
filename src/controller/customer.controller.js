@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import {
   addCustomer,
+  addFavorite,
   getAllCustomers,
   getCustomerById,
   updateCustomer,
@@ -28,6 +29,19 @@ const addCustomerHandler = async (req, res) => {
       error.statusCode || httpStatus.BAD_REQUEST,
       error.message || "Internal server error"
     );
+  }
+};
+ const addFavoriteHandler = async (req, res) => {
+  const { id: providerId } = req.params;
+
+  try {
+    const response = await addFavorite(req.user.userId, providerId);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -112,4 +126,5 @@ export {
   getAllCustomersHandler,
   getCustomerByIdHandler,
   updateCustomerHandler,
+  addFavoriteHandler
 };

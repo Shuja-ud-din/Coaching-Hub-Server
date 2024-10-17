@@ -208,11 +208,58 @@ const getAppointmentById = async (id) => {
   return data;
 };
 
+export const cancelAppointmentService = async (appointmentId, reason) => {
+  const appointment = await Appointment.findById(appointmentId);
+  if (!appointment) {
+    throw new Error("Appointment not found");
+  }
+
+  appointment.status = "Cancelled";
+  await appointment.save();
+
+  const appointmentDetails = await Appointment.findById(appointment._id)
+    .populate({
+      path: "customer",
+      populate: { path: "user", model: "User" },
+    })
+    .populate({
+      path: "provider",
+      populate: { path: "user", model: "User" },
+    })
+    .exec();
+
+  const customerEmail = appointmentDetails.customer.user.email;
+  const providerEmail = appointmentDetails.provider.user.email;
+
+  const customerSubject = "Appointment Cancelled";
+  const customerText = `Your appointment with  ${appointmentDetails.provider.user.name}  on
+  ${appointmentDetails.date}
+  is cancelled.
+   Reason: ${reason}`;
+
+  const providerSubject = "Appointment Cancelled";
+  const providerText = `Your appointment with 
+  ${appointmentDetails.customer.user.name} on ${appointmentDetails.date} is cancelled.  
+   Reason: ${reason}`;
+
+  // Send email to customer and provider
+  sendMail(customerEmail, customerSubject, customerText, (err) => {
+    if (err) console.log(err);
+    else console.log("Customer email sent");
+  });
+
+  sendMail(providerEmail, providerSubject, providerText, (err) => {
+    if (err) console.log(err);
+    else console.log("Provider email sent");
+  });
+
+  return { success: true, message: "Appointment cancelled successfully" };
+};
 const markAppointmentAsConducted = async(appointmentId) => {
   const appointmentExists = await Appointment.findById(appointmentId);
-  // if(!appointmentExists){
-  //   throw new Error("Appoitment not found");
-  // }
+  if(!appointmentExists){
+    throw new Error("Appoitment not found");
+  }
   const conductedAppointment =  await Appointment.findByIdAndUpdate(
     appointmentId,
     {status : "Conducted"},

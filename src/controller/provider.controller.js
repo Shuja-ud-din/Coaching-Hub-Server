@@ -2,9 +2,11 @@ import httpStatus from "http-status";
 import { ApiError } from "../errors/ApiError.js";
 import sendMail from "../utils/sendMail.js";
 import {
+  addReview,
   createProvider,
   getAllProviders,
   getProviderById,
+  getProviderReviews,
   updateProvider,
 } from "../services/provider.service.js";
 import {
@@ -174,6 +176,35 @@ const getCertificatesHandler = async (req, res) => {
   }
 };
 
+const getProviderReviewsHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reviews = await getProviderReviews(id);
+
+      res.status(200).json({
+      success: true,
+      data: reviews,
+      });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+}
+
+const addReviewHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const{rating,comment} = req.body;
+    await addReview(id,rating,comment,req.user.userId,req.user.role);
+
+    res.status(200).json({
+      success: true,
+      message: "Review added successfully",
+    });
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, e.message);
+  }
+}
+
 // Controller to handle updating a certificate
 const updateCertificateHandler = async (req, res) => {
   const { certificateId } = req.params;
@@ -217,10 +248,10 @@ export {
   getAllProvidersHandler,
   getProviderByIdHandler,
   updateProviderHandler,
-
-  // Exporting the certificate handlers
   addCertificateHandler,
   getCertificatesHandler,
   updateCertificateHandler,
   deleteCertificateHandler,
+  addReviewHandler,
+  getProviderReviewsHandler
 };
