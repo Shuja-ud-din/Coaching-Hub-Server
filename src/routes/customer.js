@@ -9,6 +9,8 @@ import {
   addFavoriteHandler,
   getAllCustomersHandler,
   getCustomerByIdHandler,
+  getFavoritesHandler,
+  removeFovoriteHandler,
   updateCustomerHandler,
 } from "../controller/customer.controller.js";
 import bodyValidator from "../validation/bodyValidator.js";
@@ -43,11 +45,21 @@ customerRoutes.patch(
   authentication,
   catchAsync(addFavoriteHandler)
 );
-
+customerRoutes.patch(
+  "/removeFavorite/:id",
+  authentication,
+  catchAsync(removeFovoriteHandler)
+);
+customerRoutes.get(
+  "/favorites/all",
+  authentication,
+  catchAsync(getFavoritesHandler)
+);
 customerRoutes.get(
   "/",
   adminAuthentication,
   catchAsync(getAllCustomersHandler)
 );
+
 
 export default customerRoutes;

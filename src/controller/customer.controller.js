@@ -4,6 +4,8 @@ import {
   addFavorite,
   getAllCustomers,
   getCustomerById,
+  getFavorites,
+  removeFavorite,
   updateCustomer,
 } from "../services/customer.service.js";
 import { ApiError } from "../errors/ApiError.js";
@@ -42,6 +44,37 @@ const addCustomerHandler = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+ const removeFovoriteHandler = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await removeFavorite(id, req.user.userId);
+    res.status(200).json({
+      success: true,
+      message: "Provider removed from favorites successfully",
+    });
+    
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+};
+
+ const getFavoritesHandler = async (req, res) => {
+  try {
+    const data = await getFavorites(req.user.userId);
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
   }
 };
 
@@ -126,5 +159,7 @@ export {
   getAllCustomersHandler,
   getCustomerByIdHandler,
   updateCustomerHandler,
-  addFavoriteHandler
+  addFavoriteHandler,
+  removeFovoriteHandler,
+  getFavoritesHandler
 };

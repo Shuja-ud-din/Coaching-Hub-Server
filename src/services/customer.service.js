@@ -87,6 +87,8 @@ const addFavorite= async (userId, providerId) => {
     };
   }
 
+
+
   // Add the provider to favorites
   customer.favorites.push(providerId);
   await customer.save();
@@ -95,6 +97,48 @@ const addFavorite= async (userId, providerId) => {
     success: true,
     message: "Provider added to favorites successfully",
   };
+};
+const removeFavorite = async (id,userId) => {
+
+    const customer = await Customer.findOne({ user: userId });
+
+    if (!customer) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
+    }
+
+    const index = customer.favorites.indexOf(id);
+    
+    if (index === -1) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        "Provider not found in favorites"
+      );
+    }
+
+    customer.favorites.splice(index, 1);
+    await customer.save();
+
+
+};
+
+const getFavorites = async (userId) => {
+  const customer = await Customer.findOne({ user: userId }).populate({
+    path: "favorites",
+    populate: { path: "user", model: "User" },
+  });
+
+  if (!customer) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Customer not found");
+  }
+
+  return customer.favorites.map((provider) => ({
+    id: provider._id,
+    name: provider.user.name,
+    email: provider.user.email,
+    phoneNumber: provider.user.phoneNumber,
+    profilePicture: provider.user.profilePicture,
+    isValid: provider.user.isValid,
+  }));
 };
 
 const getAllCustomers = async () => {
@@ -178,4 +222,4 @@ const updateCustomer = async (
   return updatedCustomer;
 };
 
-export { addCustomer, getAllCustomers, getCustomerById, addFavorite,updateCustomer };
+export { addCustomer, getAllCustomers, getCustomerById, addFavorite,updateCustomer,removeFavorite,getFavorites };
