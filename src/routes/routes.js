@@ -7,6 +7,7 @@ import { uploadRoutes } from "./upload.js";
 import appointmentRoutes from "./appointment.js";
 import { privateRoutes } from "./private.js";
 import customerRoutes from "./customer.js";
+import notificationsRoutes from "./notification.js";
 
 const routes = express.Router();
 
@@ -34,6 +35,10 @@ const defaultRoutes = [
   {
     path: PATH.APPOINTMENT,
     route: appointmentRoutes,
+  },
+  {
+    path: PATH.NOTIFICATION,
+    route: notificationsRoutes,
   },
   {
     path: PATH.PRIVATE,

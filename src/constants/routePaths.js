@@ -5,6 +5,7 @@ const PATH = {
   UPLOAD: "/upload",
   APPOINTMENT: "/appointment",
   CUSTOMER: "/customer",
+  NOTIFICATION: "/notifications",
   PRIVATE: "/private",
 };
 

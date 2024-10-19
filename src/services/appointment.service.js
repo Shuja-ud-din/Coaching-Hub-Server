@@ -1,3 +1,4 @@
+import { sendFirebaseNotification } from "../config/firebase.js";
 import Appointment from "../models/appointmentModel.js";
 import Customer from "../models/customerModel.js";
 import Provider from "../models/providerModel.js";
@@ -66,31 +67,46 @@ const addAppointment = async (
   const providerEmail = appointmentDetails.provider.user.email;
 
   const customerSubject = "Appointment Scheduled";
-  // const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
+  const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
 
   const providerSubject = "New Appointment Scheduled";
-  // const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
+  const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
 
-  // sendMail(customerEmail, customerSubject, customerText, (err, data) => {
-  //   if (err) {
-  //     console.error("Error sending email to customer:", err);
-  //   } else {
-  //     console.log("Customer email sent");
-  //   }
-  // });
+  sendMail(customerEmail, customerSubject, customerText, (err, data) => {
+    if (err) {
+      console.error("Error sending email to customer:", err);
+    } else {
+      console.log("Customer email sent");
+    }
+  });
 
-  // sendMail(providerEmail, providerSubject, providerText, (err, data) => {
-  //   if (err) {
-  //     console.error("Error sending email to provider:", err);
-  //   } else {
-  //     console.log("Provider email sent");
-  //   }
-  // });
+  sendMail(providerEmail, providerSubject, providerText, (err, data) => {
+    if (err) {
+      console.error("Error sending email to provider:", err);
+    } else {
+      console.log("Provider email sent");
+    }
+  });
 
   // sendNotificationToAdmin(
   //   "New Appointment",
   //   `A new appointment has been created by ${appointmentDetails.customer.user.name}`
   // );
+
+  sendFirebaseNotification({
+    userId: provider.user._id,
+    title: "New Appointment",
+    body: `Your appointment has been Scheduled with ${appointmentDetails.customer.user.name}.`,
+    path: `/appointments`,
+  });
+
+  // send Notification to Customer
+  sendFirebaseNotification({
+    userId: customer.user._id,
+    title: "Appointment Scheduled",
+    body: `Your appointment with ${appointmentDetails.provider.user.name} has been scheduled.`,
+    path: `/appointments`,
+  });
 
   return appointmentDetails;
 };
@@ -253,19 +269,40 @@ export const cancelAppointmentService = async (appointmentId, reason) => {
     else console.log("Provider email sent");
   });
 
+  // send Notification to Provider
+  sendFirebaseNotification({
+    userId: appointmentDetails.provider.user._id,
+    title: "Appointment Cancelled",
+    body: `Your appointment with ${appointmentDetails.customer.user.name} has been cancelled.`,
+    path: `/appointments`,
+  });
+
+  // send Notification to Customer
+  sendFirebaseNotification({
+    userId: appointmentDetails.customer.user._id,
+    title: "Appointment Cancelled",
+    body: `Your appointment with ${appointmentDetails.provider.user.name} has been cancelled.`,
+    path: `/appointments`,
+  });
+
   return { success: true, message: "Appointment cancelled successfully" };
 };
-const markAppointmentAsConducted = async(appointmentId) => {
+const markAppointmentAsConducted = async (appointmentId) => {
   const appointmentExists = await Appointment.findById(appointmentId);
-  if(!appointmentExists){
+  if (!appointmentExists) {
     throw new Error("Appoitment not found");
   }
-  const conductedAppointment =  await Appointment.findByIdAndUpdate(
+  const conductedAppointment = await Appointment.findByIdAndUpdate(
     appointmentId,
-    {status : "Conducted"},
-    {new: true}
-  )
-  return conductedAppointment
-}
+    { status: "Conducted" },
+    { new: true }
+  );
+  return conductedAppointment;
+};
 
-export { addAppointment, getAllAppointments, getAppointmentById,markAppointmentAsConducted };
+export {
+  addAppointment,
+  getAllAppointments,
+  getAppointmentById,
+  markAppointmentAsConducted,
+};
