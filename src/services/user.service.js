@@ -10,7 +10,7 @@ import CPToken from "../models/CPToken.js";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
-
+import crypto from 'crypto'
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
@@ -194,7 +194,8 @@ const forgetPassword = async ({ phoneNumber }) => {
     expirationDate: new Date(Date.now() + 10 * 60 * 1000),
   });
 
-  return await sendMail(
+
+   await sendMail(
     user.email,
     "OTP for Verification",
     otp,
@@ -202,14 +203,11 @@ const forgetPassword = async ({ phoneNumber }) => {
       if (err) {
         throw new Error("Unable to send OTP", 500);
       } else {
-        res.json({
-          success: true,
-          userId: user._id,
-          message: "OTP Sent Successfully",
-        });
+       console.log("successfully send otp");
       }
     }
-  );
+  )
+  return user._id.toString()
 };
 
 const verifyForgetPasswordOTP = async ({ otp, userId }) => {

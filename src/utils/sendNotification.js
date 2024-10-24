@@ -1,4 +1,5 @@
 import Notification from "../models/notificationModel.js";
+import User from "../models/userModel.js";
 import { connectedUsers } from "../socket/socket.js";
 export const sendNotificationToAdmin = async (title, message) => {
   const superAdmin = await User.findOne({ role: "Super Admin" });

@@ -2,6 +2,7 @@ import { ApiError } from "../errors/ApiError.js";
 import {
   createUser,
   forgetPassword,
+  generateOTP,
   loginUser,
   resetPassword,
   verifyForgetPasswordOTP,
@@ -88,32 +89,31 @@ const generateOTPHandler = async (req, res, next) => {
       }
     });
   } catch (error) {
-    next(
-      new ApiError(
+  
+    throw  new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 const forgetPasswordHandler = async (req, res, next) => {
   try {
     const { phoneNumber } = req.body;
 
-    const user = await forgetPassword({ phoneNumber });
-
+    const id = await forgetPassword({ phoneNumber });
+    console.log(id);
+    
     res.status(200).json({
       success: true,
-      userId: user.userId,
-      message: user.message,
+      userId: id,
+      message: "OTP Sent Successfully",
     });
   } catch (error) {
-    next(
-      new ApiError(
+    
+    throw new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 const verifyForgetPasswordOTPHandler = async (req, res, next) => {
@@ -131,12 +131,11 @@ const verifyForgetPasswordOTPHandler = async (req, res, next) => {
       token,
     });
   } catch (error) {
-    next(
-      new ApiError(
+
+    throw  new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 
