@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { createSupportChat } from "./chat.service.js";
 import httpStatus from "http-status";
 import Provider from '../models/providerModel.js'
+import { ApiError } from "../errors/ApiError.js";
 
 const addCustomer = async ({
   name,

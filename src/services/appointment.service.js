@@ -67,7 +67,8 @@ const addAppointment = async (
   const providerEmail = appointmentDetails.provider.user.email;
 
   const customerSubject = "Appointment Scheduled";
-  const customerText = `Your appointment with ${appointmentDetails.provider.user.name} for ${appointmentDetails.service.name} is scheduled on ${appointmentDetails.date}.`;
+  
+  const customerText = `Your appointment with ${appointmentDetails.provider.user.name}  is scheduled on ${appointmentDetails.date}.`;
 
   const providerSubject = "New Appointment Scheduled";
   const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
