@@ -86,8 +86,8 @@ const createProviderHandler = async (req, res) => {
 
 const getAllProvidersHandler = async (req, res) => {
   try {
-    const userId = req.userId;
-    const role = req.role;
+    const userId = req.user.userId;
+    const role = req.user.role;
 
     const provider = await getAllProviders(userId, role);
 
