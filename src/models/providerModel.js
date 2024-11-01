@@ -8,6 +8,10 @@ const schema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  status: {
+    type: String,
+    default: "Pending",
+  },
   address: {
     type: String,
     required: true,

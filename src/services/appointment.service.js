@@ -67,27 +67,41 @@ const addAppointment = async (
   const providerEmail = appointmentDetails.provider.user.email;
 
   const customerSubject = "Appointment Scheduled";
-  
+
   const customerText = `Your appointment with ${appointmentDetails.provider.user.name}  is scheduled on ${appointmentDetails.date}.`;
 
   const providerSubject = "New Appointment Scheduled";
   const providerText = `You have a new appointment with ${appointmentDetails.customer.user.name} on ${appointmentDetails.date}.`;
 
-  sendMail(customerEmail, customerSubject, customerText, (err, data) => {
-    if (err) {
-      console.error("Error sending email to customer:", err);
-    } else {
-      console.log("Customer email sent");
+  sendMail(
+    {
+      to: customerEmail,
+      subject: customerSubject,
+      text: customerText,
+    },
+    (err, data) => {
+      if (err) {
+        console.error("Error sending email to customer:", err);
+      } else {
+        console.log("Customer email sent");
+      }
     }
-  });
+  );
 
-  sendMail(providerEmail, providerSubject, providerText, (err, data) => {
-    if (err) {
-      console.error("Error sending email to provider:", err);
-    } else {
-      console.log("Provider email sent");
+  sendMail(
+    {
+      to: providerEmail,
+      subject: providerSubject,
+      text: providerText,
+    },
+    (err, data) => {
+      if (err) {
+        console.error("Error sending email to provider:", err);
+      } else {
+        console.log("Provider email sent");
+      }
     }
-  });
+  );
 
   // sendNotificationToAdmin(
   //   "New Appointment",
@@ -260,15 +274,29 @@ export const cancelAppointmentService = async (appointmentId, reason) => {
    Reason: ${reason}`;
 
   // Send email to customer and provider
-  sendMail(customerEmail, customerSubject, customerText, (err) => {
-    if (err) console.log(err);
-    else console.log("Customer email sent");
-  });
+  sendMail(
+    {
+      to: customerEmail,
+      subject: customerSubject,
+      text: customerText,
+    },
+    (err) => {
+      if (err) console.log(err);
+      else console.log("Customer email sent");
+    }
+  );
 
-  sendMail(providerEmail, providerSubject, providerText, (err) => {
-    if (err) console.log(err);
-    else console.log("Provider email sent");
-  });
+  sendMail(
+    {
+      to: providerEmail,
+      subject: providerSubject,
+      text: providerText,
+    },
+    (err) => {
+      if (err) console.log(err);
+      else console.log("Provider email sent");
+    }
+  );
 
   // send Notification to Provider
   sendFirebaseNotification({

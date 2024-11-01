@@ -21,6 +21,8 @@ import {
   resetPasswordBody,
   verifyForgetPasswordOTPBody,
 } from "../models/CPToken.js";
+import { providerSchema } from "../models/providerModel.js";
+import { createProviderHandler } from "../controller/provider.controller.js";
 
 const authRoutes = express.Router();
 
@@ -28,6 +30,12 @@ authRoutes.post(
   "/register",
   bodyValidator(userSchema),
   catchAsync(createNewUserHandler)
+);
+
+authRoutes.post(
+  "/provider/register",
+  bodyValidator(providerSchema),
+  catchAsync(createProviderHandler)
 );
 authRoutes.post(
   "/login",

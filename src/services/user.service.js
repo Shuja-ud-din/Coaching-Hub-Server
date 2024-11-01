@@ -10,7 +10,7 @@ import CPToken from "../models/CPToken.js";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
-import crypto from 'crypto'
+import crypto from "crypto";
 const createUser = async ({ name, email, phoneNumber, password }) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
@@ -52,13 +52,20 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
   );
 
   //send otp by email
-  sendMail(email, "OTP for verification", otp, (error, data) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent");
+  sendMail(
+    {
+      to: email,
+      subject: "OTP for Verification",
+      text: `Your OTP is ${otp}`,
+    },
+    (err, data) => {
+      if (err) {
+        throw new Error("Unable to send OTP", 500);
+      } else {
+        console.log("successfully send otp");
+      }
     }
-  });
+  );
 
   //Notify Admin
   sendNotificationToAdmin("New User Registered", `${name} has registered`);
@@ -104,6 +111,11 @@ const loginUser = async ({ phoneNumber, password }) => {
     roleUser = await Customer.findOne({ user: user._id });
   } else if (user.role === "Provider") {
     roleUser = await Provider.findOne({ user: user._id });
+    if (roleUser.status === "Pending") {
+      throw new ApiError(400, "Your account is pending approval");
+    } else if (roleUser.status === "Blocked") {
+      throw new ApiError(400, "Your account is blocked");
+    }
   } else {
     roleUser = await Admin.findOne({ user: user._id });
   }
@@ -194,20 +206,14 @@ const forgetPassword = async ({ phoneNumber }) => {
     expirationDate: new Date(Date.now() + 10 * 60 * 1000),
   });
 
-
-   await sendMail(
-    user.email,
-    "OTP for Verification",
-    otp,
-    (err, data) => {
-      if (err) {
-        throw new Error("Unable to send OTP", 500);
-      } else {
-       console.log("successfully send otp");
-      }
+  await sendMail(user.email, "OTP for Verification", otp, (err, data) => {
+    if (err) {
+      throw new Error("Unable to send OTP", 500);
+    } else {
+      console.log("successfully send otp");
     }
-  )
-  return user._id.toString()
+  });
+  return user._id.toString();
 };
 
 const verifyForgetPasswordOTP = async ({ otp, userId }) => {

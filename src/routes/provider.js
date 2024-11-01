@@ -1,8 +1,13 @@
 import express from "express";
-import { adminAuthentication, authentication } from "../middlewares/authentication.js";
+import {
+  adminAuthentication,
+  authentication,
+} from "../middlewares/authentication.js";
 import {
   addCertificateHandler,
   addReviewHandler,
+  approveProviderHandler,
+  blockProviderHandler,
   createProviderHandler,
   deleteCertificateHandler,
   getAllProvidersHandler,
@@ -45,7 +50,7 @@ providerRoutes.put(
 providerRoutes.post(
   "/addReview/:id",
   authentication,
-  
+
   bodyValidator(addReviewBody),
   catchAsync(addReviewHandler)
 );
@@ -58,6 +63,16 @@ providerRoutes.post(
   "/certificate/:providerId",
   bodyValidator(certificate),
   addCertificateHandler
+);
+providerRoutes.patch(
+  "/approve/:providerId",
+  adminAuthentication,
+  catchAsync(approveProviderHandler)
+);
+providerRoutes.patch(
+  "/block/:providerId",
+  adminAuthentication,
+  catchAsync(blockProviderHandler)
 );
 
 providerRoutes.delete("/certificate/:certificateId", deleteCertificateHandler);

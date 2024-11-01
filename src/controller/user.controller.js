@@ -89,11 +89,10 @@ const generateOTPHandler = async (req, res, next) => {
       }
     });
   } catch (error) {
-  
-    throw  new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
 const forgetPasswordHandler = async (req, res, next) => {
@@ -102,18 +101,17 @@ const forgetPasswordHandler = async (req, res, next) => {
 
     const id = await forgetPassword({ phoneNumber });
     console.log(id);
-    
+
     res.status(200).json({
       success: true,
       userId: id,
       message: "OTP Sent Successfully",
     });
   } catch (error) {
-    
     throw new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
 const verifyForgetPasswordOTPHandler = async (req, res, next) => {
@@ -131,11 +129,10 @@ const verifyForgetPasswordOTPHandler = async (req, res, next) => {
       token,
     });
   } catch (error) {
-
-    throw  new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
 

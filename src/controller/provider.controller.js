@@ -53,22 +53,42 @@ const createProviderHandler = async (req, res) => {
     await Promise.all(certificatePromises);
     await provider.save();
 
-    sendMail(
-      {
-        to: email,
-        subject: "Welcome to Coaching Hub",
-        text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
-        Phone Number: ${phoneNumber}
-        Password: ${password}`,
-      },
-      (err, info) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(info);
+    if (req?.user?.role === "Super Admin" || req?.user?.role === "Admin") {
+      sendMail(
+        {
+          to: email,
+          subject: "Welcome to Coaching Hub",
+          text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
+          Phone Number: ${phoneNumber}
+          Password: ${password}`,
+        },
+        (err, info) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(info);
+          }
         }
-      }
-    );
+      );
+    } else {
+      sendMail(
+        {
+          to: email,
+          subject: "Welcome to Coaching Hub",
+          text: `Hello ${name}, Welcome to Coaching Hub.
+          We have received your application. We will review your application and get back to you soon.
+          Thank you for choosing Coaching Hub.
+          `,
+        },
+        (err, info) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(info);
+          }
+        }
+      );
+    }
 
     res.status(httpStatus.CREATED).json({
       success: true,
@@ -181,20 +201,20 @@ const getProviderReviewsHandler = async (req, res) => {
     const { id } = req.params;
     const reviews = await getProviderReviews(id);
 
-      res.status(200).json({
+    res.status(200).json({
       success: true,
       data: reviews,
-      });
+    });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-}
+};
 
 const addReviewHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const{rating,comment} = req.body;
-    await addReview(id,rating,comment,req.user.userId,req.user.role);
+    const { rating, comment } = req.body;
+    await addReview(id, rating, comment, req.user.userId, req.user.role);
 
     res.status(200).json({
       success: true,
@@ -203,7 +223,7 @@ const addReviewHandler = async (req, res) => {
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, e.message);
   }
-}
+};
 
 // Controller to handle updating a certificate
 const updateCertificateHandler = async (req, res) => {
@@ -243,6 +263,71 @@ const deleteCertificateHandler = async (req, res) => {
   }
 };
 
+const approveProviderHandler = async (req, res) => {
+  try {
+    const { providerId } = req.params;
+    const provider = await Provider.findById(providerId);
+
+    if (!provider) {
+      throw new ApiError(404, "Provider not found");
+    }
+
+    provider.status = "Approved";
+    await provider.save();
+
+    sendMail(
+      {
+        to: provider.email,
+        subject: "Provider Approval",
+        text: `Hello ${provider.name}, Your application has been approved. You can now login to your account and start your journey with Coaching Hub.`,
+      },
+      (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(info);
+        }
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Provider approved successfully",
+    });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+};
+
+const blockProviderHandler = async (req, res) => {
+  try {
+    const { providerId } = req.params;
+    const provider = await Provider.findById(providerId);
+
+    if (!provider) {
+      throw new ApiError(404, "Provider not found");
+    }
+
+    provider.status = "Blocked";
+    await provider.save();
+
+    sendMail();
+
+    res.status(200).json({
+      success: true,
+      message: "Provider blocked successfully",
+    });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+};
+
 export {
   createProviderHandler,
   getAllProvidersHandler,
@@ -253,5 +338,7 @@ export {
   updateCertificateHandler,
   deleteCertificateHandler,
   addReviewHandler,
-  getProviderReviewsHandler
+  getProviderReviewsHandler,
+  approveProviderHandler,
+  blockProviderHandler,
 };
