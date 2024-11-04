@@ -77,17 +77,30 @@ const generateOTPHandler = async (req, res, next) => {
     const { phoneNumber } = req.body;
 
     const { userEmail, otp } = await generateOTP({ phoneNumber });
+    await sendMail(
+      {
+        to: userEmail,
+        subject: "OTP for Verification",
+        text: `${otp}`,
+      },
+      (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(info);
+        }
+      })
 
-    await sendMail(userEmail, "OTP for Verification", otp, (err, data) => {
-      if (err) {
-        throw new ApiError(500, "Unable to send OTP");
-      } else {
-        res.json({
-          success: true,
-          message: "OTP Sent Successfully",
-        });
-      }
-    });
+    // await sendMail(userEmail, "OTP for Verification", otp, (err, data) => {
+    //   if (err) {
+    //     throw new ApiError(500, "Unable to send OTP");
+    //   } else {
+    //     res.json({
+    //       success: true,
+    //       message: "OTP Sent Successfully",
+    //     });
+    //   }
+    // });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,

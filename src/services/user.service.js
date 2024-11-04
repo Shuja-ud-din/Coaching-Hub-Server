@@ -206,13 +206,26 @@ const forgetPassword = async ({ phoneNumber }) => {
     expirationDate: new Date(Date.now() + 10 * 60 * 1000),
   });
 
-  await sendMail(user.email, "OTP for Verification", otp, (err, data) => {
-    if (err) {
-      throw new Error("Unable to send OTP", 500);
-    } else {
-      console.log("successfully send otp");
-    }
-  });
+ await sendMail(
+    {
+      to: user.email,
+      subject: "OTP for Verification",
+      text: `You forget password otp is successfully sent to your credentials, ${otp}`,
+    },
+    (err, info) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(info);
+      }
+    })
+  // await sendMail(user.email, "OTP for Verification", otp, (err, data) => {
+  //   if (err) {
+  //     throw new Error("Unable to send OTP", 500);
+  //   } else {
+  //     console.log("successfully send otp");
+  //   }
+  // });
   return user._id.toString();
 };
 

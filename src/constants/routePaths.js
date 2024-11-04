@@ -7,6 +7,7 @@ const PATH = {
   CUSTOMER: "/customer",
   NOTIFICATION: "/notifications",
   PRIVATE: "/private",
+  APPSTATUS: "/app",
 };
 
 export { PATH };
