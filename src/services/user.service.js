@@ -32,7 +32,9 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
     phoneNumber,
     otp,
   });
-
+  const customer = await Customer.create({
+    user: user._id,
+  });
   //create customer and associate with support
   // const customer = await Customer.create({
   //   user: user._id,
@@ -75,8 +77,8 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
       email: user.email,
       phoneNumber: user.phoneNumber,
       role: user.role,
-      id: user.id,
-      roleId: user.roleId,
+      id: user._id,
+      roleId: customer._id,
     },
     token,
   };

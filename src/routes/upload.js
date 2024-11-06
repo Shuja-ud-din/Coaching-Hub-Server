@@ -15,7 +15,7 @@ uploadRoutes.post(
 
 uploadRoutes.post(
   "/document",
-  authentication,
+  // authentication,
   documentUpload.single("document"),
   catchAsync(uploadDocument)
 );

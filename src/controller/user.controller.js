@@ -21,12 +21,10 @@ const createNewUserHandler = async (req, res, next) => {
       token: user.token,
     });
   } catch (error) {
-    next(
-      new ApiError(
+     throw new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 
@@ -64,12 +62,11 @@ const userVerificationHandler = async (req, res, next) => {
       token,
     });
   } catch (error) {
-    next(
-      new ApiError(
+
+    throw  new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 const generateOTPHandler = async (req, res, next) => {
@@ -160,12 +157,11 @@ const resetPasswordHandler = async (req, res, next) => {
       message: "Password Reset Successfully",
     });
   } catch (error) {
-    next(
-      new ApiError(
+
+      throw new ApiError(
         error.statusCode || 500,
         error.message || "Internal server error"
       )
-    );
   }
 };
 
