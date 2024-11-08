@@ -31,6 +31,10 @@ const schema = mongoose.Schema({
     required: true,
     default: "Scheduled",
   },
+  link:{
+    type:String,
+    default: null,
+  },
   date: {
     type: Date,
     required: true,

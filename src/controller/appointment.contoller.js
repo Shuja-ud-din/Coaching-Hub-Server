@@ -6,6 +6,7 @@ import {
   getAllAppointments,
   getAppointmentById,
   markAppointmentAsConducted,
+  updateAppointmentLink,
 } from "../services/appointment.service.js";
 
 const addAppointmentHandler = async (req, res) => {
@@ -83,11 +84,28 @@ const markAppointmentAsConductedHandler = async(req,res)=>{
     );
   }
 }
+const updateAppointmentLinkHandler = async(req,res) =>{
+  try{
+    const {id:appointmentId} = req.params;
+    const {link} = req.body
+    const appointment=  await updateAppointmentLink(appointmentId,link);
+    res.status(200).json({
+      success: true,
+      link: appointment.link,
+    });
+  }catch(error){
+     throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+     )
+  }
 
+}
 export {
   addAppointmentHandler,
   getAllAppointmentsHandler,
   getAppointmentByIdHandler,
   cancelAppointmentHandler,
   markAppointmentAsConductedHandler,
+  updateAppointmentLinkHandler,
 };

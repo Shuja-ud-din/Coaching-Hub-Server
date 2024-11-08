@@ -232,7 +232,8 @@ const getAppointmentById = async (id) => {
     //   description: service.description,
     //   price: service.price,
     // },
-    date: appointment.date,
+    date: appointment.date, 
+    link:appointment.link,
     status: appointment.status,
   };
 
@@ -329,9 +330,19 @@ const markAppointmentAsConducted = async (appointmentId) => {
   return conductedAppointment;
 };
 
+const updateAppointmentLink = async(appointmentId,newLink) =>{
+   const appointment = await Appointment.findById(appointmentId)
+   if (!appointment) {
+    throw new Error("Appoitment not found");
+  }
+  appointment.link = newLink;
+  await appointment.save()
+  return appointment
+}
 export {
   addAppointment,
   getAllAppointments,
   getAppointmentById,
   markAppointmentAsConducted,
+  updateAppointmentLink,
 };
