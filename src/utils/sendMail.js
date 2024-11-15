@@ -1,14 +1,17 @@
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 
-const sendMail = async ({ to, subject, text }, callback) => {
+const sendMail = async ({ to, subject, text,html }, callback) => {
   const mailOptions = {
     from: env.MAIL.MAIL_SENDER,
     to,
     subject,
     text,
+   
   };
-
+  if (html) {
+    mailOptions.html = html;
+  }
   try {
     const transporter = nodemailer.createTransport({
       host: env.MAIL.MAIL_HOST,

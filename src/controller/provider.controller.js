@@ -16,6 +16,7 @@ import {
   deleteCertificate,
 } from "../services/certificate.service.js";
 import Provider from "../models/providerModel.js";
+import { welcomeEmailTemplate } from "../templates/welcomeEmailTemplate.js";
 
 const createProviderHandler = async (req, res) => {
   try {
@@ -71,28 +72,26 @@ const createProviderHandler = async (req, res) => {
         }
       );
     } else {
-      sendMail(
-        {
-          to: email,
-          subject: "Welcome to Coaching Hub",
-          text: `Hello ${name}, Welcome to Coaching Hub.
-          We have received your application. We will review your application and get back to you soon.
-          Thank you for choosing Coaching Hub.
-          `,
-        },
-        (err, info) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(info);
-          }
-        }
-      );
+          sendMail(
+            {
+              to: email,
+              subject: "Welcome to Coaching Hub 🌟",
+              html: welcomeEmailTemplate(name),
+            },
+            (err, info) => {
+              if (err) {
+              console.log(err);
+              } else {
+              console.log(info);
+              }
+            }
+          );
+
     }
 
     res.status(httpStatus.CREATED).json({
       success: true,
-      message: "Provider created successfully",
+      message: "Coach created successfully",
     });
   } catch (error) {
     console.log(error);

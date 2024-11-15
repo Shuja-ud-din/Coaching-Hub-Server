@@ -37,6 +37,15 @@ const schema = mongoose.Schema({
     ],
     default: [],
   },
+  selfTodos: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SelfTodos",
+      },
+    ],
+    default: [],
+  },
 });
 
 const Customer = mongoose.model("Customer", schema);
