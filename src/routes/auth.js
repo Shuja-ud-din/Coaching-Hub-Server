@@ -22,7 +22,7 @@ import {
   verifyForgetPasswordOTPBody,
 } from "../models/CPToken.js";
 import { providerSchema } from "../models/providerModel.js";
-import { createProviderHandler } from "../controller/provider.controller.js";
+import { createProviderHandler, providerSignupHandler } from "../controller/provider.controller.js";
 
 const authRoutes = express.Router();
 
@@ -35,7 +35,7 @@ authRoutes.post(
 authRoutes.post(
   "/provider/register",
   bodyValidator(providerSchema),
-  catchAsync(createProviderHandler)
+  catchAsync(providerSignupHandler)
 );
 authRoutes.post(
   "/login",

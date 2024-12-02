@@ -17,7 +17,40 @@ import {
 } from "../services/certificate.service.js";
 import Provider from "../models/providerModel.js";
 import { welcomeEmailTemplate } from "../templates/welcomeEmailTemplate.js";
+import { createUser } from "../services/user.service.js";
 
+const providerSignupHandler = async(req,res) =>{
+  try{
+    const {body} = req;
+    const provider =  await createUser({role:"Provider",...body});
+    const  {certificates} =  body
+
+    const certificatePromises = certificates.map(async (certificate) => {
+      const tempCertificate = await addCertificate(
+        provider._id.toString(),
+        certificate.title,
+        certificate.document
+      );
+
+      provider.certificates.push(tempCertificate._id);
+    });
+
+    await Promise.all(certificatePromises);
+    await provider.save();
+    res.status(httpStatus.CREATED).json({
+      success: true,
+      message: "Coach will be created successfully after verification",
+    });
+
+  }catch(error){
+    console.log(error);
+
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Internal server error"
+    );
+  }
+}
 const createProviderHandler = async (req, res) => {
   try {
     const { body } = req;
@@ -54,7 +87,7 @@ const createProviderHandler = async (req, res) => {
     await Promise.all(certificatePromises);
     await provider.save();
 
-    if (req?.user?.role === "Super Admin" || req?.user?.role === "Admin") {
+  
       sendMail(
         {
           to: email,
@@ -71,23 +104,21 @@ const createProviderHandler = async (req, res) => {
           }
         }
       );
-    } else {
-          sendMail(
-            {
-              to: email,
-              subject: "Welcome to Coaching Hub 🌟",
-              html: welcomeEmailTemplate(name),
-            },
-            (err, info) => {
-              if (err) {
-              console.log(err);
-              } else {
-              console.log(info);
-              }
-            }
-          );
-
-    }
+      //   sendMail(
+      //   {
+      //     to: email,
+      //     subject: "Welcome to Coaching Hub 🌟",
+      //     html: welcomeEmailTemplate(name),
+      //   },
+      //   (err, info) => {
+      //     if (err) {
+      //     console.log(err);
+      //     } else {
+      //     console.log(info);
+      //     }
+      //   }
+      // );
+    
 
     res.status(httpStatus.CREATED).json({
       success: true,
@@ -340,4 +371,5 @@ export {
   getProviderReviewsHandler,
   approveProviderHandler,
   blockProviderHandler,
+  providerSignupHandler,
 };

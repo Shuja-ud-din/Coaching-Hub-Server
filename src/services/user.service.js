@@ -11,7 +11,31 @@ import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
 import crypto from "crypto";
-const createUser = async ({ name, email, phoneNumber, password }) => {
+
+const createUser = async ({  
+      name,
+      email,
+      phoneNumber,
+      address,
+      password,
+      speciality,
+      experience,
+      about,
+      workingDays,
+      workingTimes,
+      profilePicture,
+      swarmLink,
+      timeZone,
+      language,
+      sessionDuration,
+      sessionPrice,
+      countryOfResidence,
+      nationality,
+      degreeName,
+      institute,
+      yearOfPassingDegree,
+      role="Customer",
+    }) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
 
@@ -31,18 +55,10 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
     password: encryptedPassword,
     phoneNumber,
     otp,
+    role,
   });
-  const customer = await Customer.create({
-    user: user._id,
-  });
-  //create customer and associate with support
-  // const customer = await Customer.create({
-  //   user: user._id,
-  // });
-  // const chat = await createSupportChat(user._id);
-  // customer.chat.push(chat._id);
+ 
 
-  // await customer.save();
 
   // generate jwt token
   const token = jsonwebtoken.sign(
@@ -71,17 +87,47 @@ const createUser = async ({ name, email, phoneNumber, password }) => {
 
   //Notify Admin
   sendNotificationToAdmin("New User Registered", `${name} has registered`);
-  return {
-    user: {
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      id: user._id,
-      roleId: customer._id,
-    },
-    token,
-  };
+  if(role==="Provider"){
+    const provider = await Provider.create({
+      user: user._id,
+      speciality,
+      experience,
+      about,
+      workingDays,
+      workingTimes,
+      profilePicture,
+      swarmLink,
+      timeZone,
+      language,
+      sessionDuration,
+      address,
+      sessionPrice,
+      countryOfResidence,
+      nationality,
+      degreeName,
+      institute,
+      yearOfPassingDegree,
+    });
+  
+    return provider
+  }
+  else{
+    const customer = await Customer.create({
+      user: user._id,
+    });
+    return {
+      user: {
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        id: user._id,
+        roleId: customer._id,
+      },
+      token,
+    };
+  }
+
 };
 
 const loginUser = async ({ phoneNumber, password }) => {

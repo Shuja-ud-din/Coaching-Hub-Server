@@ -13,6 +13,7 @@ import {
   getAllProvidersHandler,
   getProviderByIdHandler,
   getProviderReviewsHandler,
+  providerSignupHandler,
   updateCertificateHandler,
   updateProviderHandler,
 } from "../controller/provider.controller.js";
@@ -35,6 +36,7 @@ providerRoutes.post(
   bodyValidator(providerSchema),
   catchAsync(createProviderHandler)
 );
+
 
 providerRoutes.get(
   "/:id",
