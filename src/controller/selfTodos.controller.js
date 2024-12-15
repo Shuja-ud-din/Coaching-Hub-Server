@@ -1,14 +1,25 @@
 import httpStatus from "http-status";
 import { ApiError } from "../errors/ApiError.js";
-import { addSelfTodos, completeSelfTodo, deleteSelfTodo, getAllSelfTodos, updateSelfTodo } from "../services/selfTodos.js";
-
+import {
+  addSelfTodos,
+  completeSelfTodo,
+  deleteSelfTodo,
+  getAllSelfTodos,
+  updateSelfTodo,
+} from "../services/selfTodos.service.js";
 
 const addSelfTodosHandler = async (req, res) => {
   try {
     const { name, description, status, deadline } = req.body;
     const { id: customerId } = req.params;
-    const todo = await addSelfTodos(customerId, name, description, status, deadline);
-    
+    const todo = await addSelfTodos(
+      customerId,
+      name,
+      description,
+      status,
+      deadline
+    );
+
     // Define the data object with key-value pairs
     const data = {
       customer: todo.customer._id,
@@ -19,7 +30,7 @@ const addSelfTodosHandler = async (req, res) => {
       _id: todo._id,
       __v: todo.__v,
     };
-    
+
     res.status(201).json({ success: true, data });
   } catch (error) {
     throw new ApiError(
@@ -28,7 +39,6 @@ const addSelfTodosHandler = async (req, res) => {
     );
   }
 };
-
 
 const getAllSelfTodosHandler = async (req, res) => {
   try {
@@ -56,10 +66,9 @@ const updateSelfTodosHandler = async (req, res) => {
   }
 };
 const completeSelfTodoHandler = async (req, res) => {
-
   try {
     const { id: todoId } = req.params;
-     await completeSelfTodo(todoId);
+    await completeSelfTodo(todoId);
     res.status(200).json({ success: true });
   } catch (error) {
     throw new ApiError(

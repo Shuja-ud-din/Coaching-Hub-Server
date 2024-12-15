@@ -14,7 +14,7 @@ import {
   getAppointmentByIdHandler,
   markAppointmentAsConductedHandler,
   updateAppointmentLinkHandler,
-} from "../controller/appointment.contoller.js";
+} from "../controller/appointment.controller.js";
 import { todos, updateTodos } from "../models/todosModel.js";
 import {
   addTodosHandler,
@@ -69,17 +69,8 @@ appointmentRoutes.put(
   bodyValidator(updateTodos),
   catchAsync(updateTodosHandler)
 );
-appointmentRoutes.patch(
-  "/todos/:id",
-  catchAsync(completeTodoHandler)
-);
-appointmentRoutes.patch(
-  "/:id",
-  catchAsync(markAppointmentAsConductedHandler)
-);
-appointmentRoutes.patch(
-  "/link/:id",
-  catchAsync(updateAppointmentLinkHandler)
-);
+appointmentRoutes.patch("/todos/:id", catchAsync(completeTodoHandler));
+appointmentRoutes.patch("/:id", catchAsync(markAppointmentAsConductedHandler));
+appointmentRoutes.patch("/link/:id", catchAsync(updateAppointmentLinkHandler));
 appointmentRoutes.delete("/todos/:id", catchAsync(deleteTodosHandler));
 export default appointmentRoutes;

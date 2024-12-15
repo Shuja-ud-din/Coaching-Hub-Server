@@ -2,7 +2,10 @@ import express from "express";
 import { authentication } from "../middlewares/authentication.js";
 import { documentUpload, imageUpload } from "../middlewares/multer.js";
 import { catchAsync } from "../utils/catchAsync.js";
-import { uploadDocument, uploadImage } from "../controller/upload.contoller.js";
+import {
+  uploadDocument,
+  uploadImage,
+} from "../controller/upload.controller.js";
 
 const uploadRoutes = express.Router();
 

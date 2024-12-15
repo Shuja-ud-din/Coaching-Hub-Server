@@ -19,7 +19,13 @@ import {
   customerUpdateSchema,
 } from "../models/customerModel.js";
 import { addSelfTodo, updateSelfTodos } from "../models/selfTodos.js";
-import { addSelfTodosHandler, completeSelfTodoHandler, deleteSelfTodosHandler, getAllSelfTodosHandler, updateSelfTodosHandler } from "../controller/selfTodos.js";
+import {
+  addSelfTodosHandler,
+  completeSelfTodoHandler,
+  deleteSelfTodosHandler,
+  getAllSelfTodosHandler,
+  updateSelfTodosHandler,
+} from "../controller/selfTodos.controller.js";
 
 const customerRoutes = express.Router();
 
@@ -63,7 +69,6 @@ customerRoutes.get(
   catchAsync(getAllCustomersHandler)
 );
 
-
 customerRoutes.post(
   "/:id/todos",
   bodyValidator(addSelfTodo),
@@ -76,10 +81,7 @@ customerRoutes.put(
   bodyValidator(updateSelfTodos),
   catchAsync(updateSelfTodosHandler)
 );
-customerRoutes.patch(
-  "/todos/:id",
-  catchAsync(completeSelfTodoHandler)
-);
+customerRoutes.patch("/todos/:id", catchAsync(completeSelfTodoHandler));
 customerRoutes.delete("/todos/:id", catchAsync(deleteSelfTodosHandler));
 
 export default customerRoutes;
