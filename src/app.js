@@ -23,6 +23,10 @@ app.get("/health", (req, res) => {
   res.status(200).send("Server is running");
 });
 
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to the server");
+});
+
 app.use("/api", routes);
 
 export default app;
