@@ -1,12 +1,10 @@
 import admin from "firebase-admin";
+import fsPromise from "fs/promises";
 import ExpoToken from "../models/expoTokenModel.js";
 
 admin.initializeApp({
   credential: admin.credential.cert(
-    JSON.parse(() => {
-      const serviceAccount = require("../config/firebase-adminsdk.json");
-      return JSON.stringify(serviceAccount);
-    })()
+    JSON.parse(await fsPromise.readFile("firebase_admin.json"))
   ),
 });
 
