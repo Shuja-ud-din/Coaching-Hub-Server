@@ -1,9 +1,13 @@
 import admin from "firebase-admin";
-import serviceAccount from "../../firebase_admin.json" assert { type: "json" };
 import ExpoToken from "../models/expoTokenModel.js";
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(
+    JSON.parse(() => {
+      const serviceAccount = require("../config/firebase-adminsdk.json");
+      return JSON.stringify(serviceAccount);
+    })()
+  ),
 });
 
 export const sendFirebaseNotification = async ({
