@@ -18,12 +18,13 @@ import {
 import Provider from "../models/providerModel.js";
 import { welcomeEmailTemplate } from "../templates/welcomeEmailTemplate.js";
 import { createUser } from "../services/user.service.js";
+import User from "../models/userModel.js";
 
-const providerSignupHandler = async(req,res) =>{
-  try{
-    const {body} = req;
-    const provider =  await createUser({role:"Provider",...body});
-    const  {certificates} =  body
+const providerSignupHandler = async (req, res) => {
+  try {
+    const { body } = req;
+    const provider = await createUser({ role: "Provider", ...body });
+    const { certificates } = body;
 
     const certificatePromises = certificates.map(async (certificate) => {
       const tempCertificate = await addCertificate(
@@ -41,8 +42,7 @@ const providerSignupHandler = async(req,res) =>{
       success: true,
       message: "Coach will be created successfully after verification",
     });
-
-  }catch(error){
+  } catch (error) {
     console.log(error);
 
     throw new ApiError(
@@ -50,7 +50,7 @@ const providerSignupHandler = async(req,res) =>{
       error.message || "Internal server error"
     );
   }
-}
+};
 const createProviderHandler = async (req, res) => {
   try {
     const { body } = req;
@@ -87,38 +87,36 @@ const createProviderHandler = async (req, res) => {
     await Promise.all(certificatePromises);
     await provider.save();
 
-  
-      sendMail(
-        {
-          to: email,
-          subject: "Welcome to Coaching Hub",
-          text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
+    sendMail(
+      {
+        to: email,
+        subject: "Welcome to Coaching Hub",
+        text: `Hello ${name}, Welcome to Coaching Hub. We are glad to have you on board. You can now login to your account using the following credentials:
           Phone Number: ${phoneNumber}
           Password: ${password}`,
-        },
-        (err, info) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(info);
-          }
+      },
+      (err, info) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(info);
         }
-      );
-      //   sendMail(
-      //   {
-      //     to: email,
-      //     subject: "Welcome to Coaching Hub 🌟",
-      //     html: welcomeEmailTemplate(name),
-      //   },
-      //   (err, info) => {
-      //     if (err) {
-      //     console.log(err);
-      //     } else {
-      //     console.log(info);
-      //     }
-      //   }
-      // );
-    
+      }
+    );
+    //   sendMail(
+    //   {
+    //     to: email,
+    //     subject: "Welcome to Coaching Hub 🌟",
+    //     html: welcomeEmailTemplate(name),
+    //   },
+    //   (err, info) => {
+    //     if (err) {
+    //     console.log(err);
+    //     } else {
+    //     console.log(info);
+    //     }
+    //   }
+    // );
 
     res.status(httpStatus.CREATED).json({
       success: true,
@@ -297,12 +295,16 @@ const approveProviderHandler = async (req, res) => {
   try {
     const { providerId } = req.params;
     const provider = await Provider.findById(providerId);
+    const user = await User.findById(provider.user);
 
-    if (!provider) {
+    if (!provider || !user) {
       throw new ApiError(404, "Provider not found");
     }
 
     provider.status = "Approved";
+    user.isValid = true;
+
+    await user.save();
     await provider.save();
 
     sendMail(
@@ -336,15 +338,23 @@ const blockProviderHandler = async (req, res) => {
   try {
     const { providerId } = req.params;
     const provider = await Provider.findById(providerId);
+    const user = await User.findById(provider.user);
 
-    if (!provider) {
+    if (!provider || !user) {
       throw new ApiError(404, "Provider not found");
     }
 
     provider.status = "Blocked";
+    user.isValid = false;
+
+    await user.save();
     await provider.save();
 
-    sendMail();
+    sendMail({
+      to: provider.email,
+      subject: "Provider Blocked",
+      text: `Hello ${provider.name}, Your account has been blocked. Please contact support for more information.`,
+    });
 
     res.status(200).json({
       success: true,
