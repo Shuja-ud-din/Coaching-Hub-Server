@@ -9,6 +9,7 @@ import { privateRoutes } from "./private.js";
 import customerRoutes from "./customer.js";
 import notificationsRoutes from "./notification.js";
 import appStatusRoutes from "./appStatus.js";
+import chatRoutes from "./chat.js";
 
 const routes = express.Router();
 
@@ -20,6 +21,10 @@ const defaultRoutes = [
   {
     path: PATH.ADMIN,
     route: adminRoutes,
+  },
+  {
+    path: PATH.CHAT,
+    route: chatRoutes,
   },
   {
     path: PATH.PROVIDER,
