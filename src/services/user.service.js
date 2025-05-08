@@ -12,30 +12,30 @@ import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
 import crypto from "crypto";
 
-const createUser = async ({  
-      name,
-      email,
-      phoneNumber,
-      address,
-      password,
-      speciality,
-      experience,
-      about,
-      workingDays,
-      workingTimes,
-      profilePicture,
-      swarmLink,
-      timeZone,
-      language,
-      sessionDuration,
-      sessionPrice,
-      countryOfResidence,
-      nationality,
-      degreeName,
-      institute,
-      yearOfPassingDegree,
-      role="Customer",
-    }) => {
+const createUser = async ({
+  name,
+  email,
+  phoneNumber,
+  address,
+  password,
+  speciality,
+  experience,
+  about,
+  workingDays,
+  workingTimes,
+  profilePicture,
+  swarmLink,
+  timeZone,
+  language,
+  sessionDuration,
+  sessionPrice,
+  countryOfResidence,
+  nationality,
+  degreeName,
+  institute,
+  yearOfPassingDegree,
+  role = "Customer",
+}) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
 
@@ -57,8 +57,6 @@ const createUser = async ({
     otp,
     role,
   });
- 
-
 
   // generate jwt token
   const token = jsonwebtoken.sign(
@@ -78,6 +76,7 @@ const createUser = async ({
     },
     (err, data) => {
       if (err) {
+        console.log(err);
         throw new Error("Unable to send OTP", 500);
       } else {
         console.log("successfully send otp");
@@ -87,7 +86,7 @@ const createUser = async ({
 
   //Notify Admin
   sendNotificationToAdmin("New User Registered", `${name} has registered`);
-  if(role==="Provider"){
+  if (role === "Provider") {
     const provider = await Provider.create({
       user: user._id,
       speciality,
@@ -108,10 +107,9 @@ const createUser = async ({
       institute,
       yearOfPassingDegree,
     });
-  
-    return provider
-  }
-  else{
+
+    return provider;
+  } else {
     const customer = await Customer.create({
       user: user._id,
     });
@@ -127,11 +125,10 @@ const createUser = async ({
       token,
     };
   }
-
 };
 
-const loginUser = async ({ phoneNumber, password }) => {
-  const user = await User.findOne({ phoneNumber });
+const loginUser = async ({ email, phoneNumber, password }) => {
+  const user = await User.findOne({ $or: [{ email }, { phoneNumber }] });
 
   if (!user) {
     throw new ApiError(400, "Invalid credentials");
@@ -182,8 +179,8 @@ const loginUser = async ({ phoneNumber, password }) => {
     token,
   };
 };
-const verifyUser = async (otp, phoneNumber) => {
-  const user = await User.findOne({ phoneNumber });
+const verifyUser = async (otp, email) => {
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new Error("User Not Found", 400);
@@ -211,8 +208,8 @@ const verifyUser = async (otp, phoneNumber) => {
   };
 };
 
-const generateOTP = async ({ phoneNumber }) => {
-  const user = await User.findOne({ phoneNumber });
+const generateOTP = async ({ email }) => {
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new Error("User Not Found", 400);
@@ -226,8 +223,8 @@ const generateOTP = async ({ phoneNumber }) => {
   return { userEmail: user.email, otp };
 };
 
-const forgetPassword = async ({ phoneNumber }) => {
-  const user = await User.findOne({ phoneNumber });
+const forgetPassword = async ({ email }) => {
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new Error("User Not Found", 400);
@@ -246,19 +243,18 @@ const forgetPassword = async ({ phoneNumber }) => {
   }
 
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  const token = crypto.randomBytes(16).toString("hex");
-  const cpToken = await CPToken.create({
+
+  await CPToken.create({
     userId: user._id,
-    token,
     otp,
-    expirationDate: new Date(Date.now() + 10 * 60 * 1000),
+    expirationDate: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
   });
 
- await sendMail(
+  await sendMail(
     {
       to: user.email,
       subject: "OTP for Verification",
-      text: `You forget password otp is successfully sent to your credentials, ${otp}`,
+      text: `You forget password otp is successfully sent to your credentials, ${otp}. This OTP will expire in 10 minutes.`,
     },
     (err, info) => {
       if (err) {
@@ -266,7 +262,8 @@ const forgetPassword = async ({ phoneNumber }) => {
       } else {
         console.log(info);
       }
-    })
+    }
+  );
   // await sendMail(user.email, "OTP for Verification", otp, (err, data) => {
   //   if (err) {
   //     throw new Error("Unable to send OTP", 500);
@@ -277,30 +274,42 @@ const forgetPassword = async ({ phoneNumber }) => {
   return user._id.toString();
 };
 
-const verifyForgetPasswordOTP = async ({ otp, userId }) => {
-  const cpToken = await CPToken.findOne({ userId });
+const verifyForgetPasswordOTP = async ({ otp, email }) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("User Not Found", 400);
+  }
 
+  const cpToken = await CPToken.findOne({ userId: user._id });
   if (!cpToken) {
-    throw new Error("OTP Not Found", 400);
+    throw new Error("Invalid OTP", 400);
   }
   if (cpToken.otp !== otp) {
     throw new Error("Invalid OTP", 400);
   }
+  if (cpToken.expirationDate < new Date()) {
+    throw new Error("OTP Expired", 400);
+  }
 
-  return { userId, token: cpToken.token };
+  const token = jsonwebtoken.sign(
+    {
+      userId: user._id,
+      role: user.role,
+    },
+    process.env.JWT_SECRET
+  );
+
+  return { userId: user._id, token };
 };
 
-const resetPassword = async ({ token, userId, password }) => {
-  const cpToken = await CPToken.findOne({ token, userId });
+const resetPassword = async ({ userId, password }) => {
+  const cpToken = await CPToken.findOne({ userId });
 
   if (!cpToken) {
     throw new Error("Invalid Token", 400);
   }
   if (cpToken.expirationDate < new Date()) {
     throw new Error("Token Expired", 400);
-  }
-  if (token !== cpToken.token) {
-    throw new Error("Invalid Token", 400);
   }
 
   const user = await User.findById(userId);

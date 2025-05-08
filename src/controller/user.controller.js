@@ -9,29 +9,29 @@ import {
   verifyUser,
 } from "../services/user.service.js";
 import sendMail from "../utils/sendMail.js";
+import jwt from "jsonwebtoken";
 
 const createNewUserHandler = async (req, res, next) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
-    const user = await createUser({ name, email, phoneNumber, password });
+    await createUser({ name, email, phoneNumber, password });
+
     res.status(201).json({
       success: true,
-      message: "User Registered Successfully",
-      user: user.user,
-      token: user.token,
+      message: "OTP has been sent, Please check your email",
     });
   } catch (error) {
-     throw new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
 
 const loginUserHandler = async (req, res, next) => {
   try {
-    const { phoneNumber, password } = req.body;
-    const user = await loginUser({ phoneNumber, password });
+    const { email, phoneNumber, password } = req.body;
+    const user = await loginUser({ email, phoneNumber, password });
     res.status(200).json({
       success: true,
       message: "user logged in successfully",
@@ -47,34 +47,28 @@ const loginUserHandler = async (req, res, next) => {
 };
 const userVerificationHandler = async (req, res, next) => {
   try {
-    const { otp, phoneNumber } = req.body;
-    const { user, token } = await verifyUser(otp, phoneNumber);
+    const { otp, email } = req.body;
+    const { user, token } = await verifyUser(otp, email);
 
     res.status(200).json({
       success: true,
-      message: "User Verified Successfully",
-      user: {
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
-      },
+      message: "User Logged in Successfully",
       token,
     });
   } catch (error) {
-
-    throw  new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
+
 const generateOTPHandler = async (req, res, next) => {
   try {
-    const { phoneNumber } = req.body;
+    const { email } = req.body;
 
-    const { userEmail, otp } = await generateOTP({ phoneNumber });
-    await sendMail(
+    const { userEmail, otp } = await generateOTP({ email });
+    sendMail(
       {
         to: userEmail,
         subject: "OTP for Verification",
@@ -86,7 +80,8 @@ const generateOTPHandler = async (req, res, next) => {
         } else {
           console.log(info);
         }
-      })
+      }
+    );
 
     // await sendMail(userEmail, "OTP for Verification", otp, (err, data) => {
     //   if (err) {
@@ -98,6 +93,11 @@ const generateOTPHandler = async (req, res, next) => {
     //     });
     //   }
     // });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP Sent Successfully",
+    });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
@@ -105,16 +105,15 @@ const generateOTPHandler = async (req, res, next) => {
     );
   }
 };
+
 const forgetPasswordHandler = async (req, res, next) => {
   try {
-    const { phoneNumber } = req.body;
+    const { email } = req.body;
 
-    const id = await forgetPassword({ phoneNumber });
-    console.log(id);
+    await forgetPassword({ email });
 
     res.status(200).json({
       success: true,
-      userId: id,
       message: "OTP Sent Successfully",
     });
   } catch (error) {
@@ -126,16 +125,15 @@ const forgetPasswordHandler = async (req, res, next) => {
 };
 const verifyForgetPasswordOTPHandler = async (req, res, next) => {
   try {
-    const { otp, userId } = req.body;
-    const { userId: IdOfUser, token } = await verifyForgetPasswordOTP({
+    const { otp, email } = req.body;
+    const { token } = await verifyForgetPasswordOTP({
       otp,
-      userId,
+      email,
     });
 
     res.status(200).json({
       success: true,
       message: "OTP Verified Successfully",
-      userId: IdOfUser,
       token,
     });
   } catch (error) {
@@ -148,20 +146,26 @@ const verifyForgetPasswordOTPHandler = async (req, res, next) => {
 
 const resetPasswordHandler = async (req, res, next) => {
   try {
-    const { token, userId, password } = req.body;
+    const { password } = req.body;
+    const token =
+      req.header("authorization") && req.header("authorization").split(" ")[1];
 
-    await resetPassword({ token, userId, password });
+    const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+
+    await resetPassword({
+      userId,
+      password,
+    });
 
     res.status(200).json({
       success: true,
       message: "Password Reset Successfully",
     });
   } catch (error) {
-
-      throw new ApiError(
-        error.statusCode || 500,
-        error.message || "Internal server error"
-      )
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
   }
 };
 
