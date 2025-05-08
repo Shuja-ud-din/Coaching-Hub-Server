@@ -7,10 +7,6 @@ const schema = mongoose.Schema({
     ref: "User",
     required: true,
   },
-  token: {
-    type: String,
-    required: true,
-  },
   otp: {
     type: String,
     required: true,
@@ -21,25 +17,23 @@ const schema = mongoose.Schema({
   },
   expirationDate: {
     type: Date,
-    required: true,
+    default: Date.now + 1000 * 60 * 10, // 10 minutes
   },
 });
 
 const CPToken = mongoose.model("CPToken", schema);
 
 export const forgetPasswordBody = Joi.object({
-  phoneNumber: Joi.string().required(),
+  email: Joi.string().email().required(),
 });
 
 export const resetPasswordBody = Joi.object({
-  token: Joi.string().required(),
-  userId: Joi.string().required(),
   password: Joi.string().required(),
 });
 
 export const verifyForgetPasswordOTPBody = Joi.object({
   otp: Joi.string().required(),
-  userId: Joi.string().required(),
+  email: Joi.string().email().required(),
 });
 
 export default CPToken;
