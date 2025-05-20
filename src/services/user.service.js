@@ -127,15 +127,15 @@ const createUser = async ({
   }
 };
 
-const loginUser = async ({ email, phoneNumber, password }) => {
-  const user = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+const loginUser = async ({ email, phoneNumber, password, role }) => {
+  const user = await User.findOne({
+    $or: [{ email }, { phoneNumber }],
+    role: role,
+  });
 
   if (!user) {
     throw new ApiError(400, "Invalid credentials");
   }
-  // if (!user.isValid) {
-  //   throw new ApiError(400, "User is not valid");
-  // }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
@@ -152,9 +152,9 @@ const loginUser = async ({ email, phoneNumber, password }) => {
 
   let roleUser = null;
 
-  if (user.role === "Customer") {
+  if (user.role === "coachee") {
     roleUser = await Customer.findOne({ user: user._id });
-  } else if (user.role === "Provider") {
+  } else if (user.role === "coach") {
     roleUser = await Provider.findOne({ user: user._id });
     if (roleUser.status === "Pending") {
       throw new ApiError(400, "Your account is pending approval");

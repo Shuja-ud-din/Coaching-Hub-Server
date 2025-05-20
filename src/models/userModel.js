@@ -84,6 +84,17 @@ const loginSchema = joi
     email: joi.string().email().messages({
       "string.email": "Email must be a valid email address.",
     }),
+    // role can be Admin, Super_Admin, coach, coachee
+    role: joi
+      .string()
+      .valid("Admin", "Super_Admin", "coach", "coachee")
+      .required()
+      .messages({
+        "string.empty": "Role is required.",
+        "any.required": "Role is required.",
+        "string.valid":
+          "Role must be either Admin, Super_Admin, coach, or coachee.",
+      }),
     password: joi.string().required().messages({
       "string.empty": "Password is required.",
       "any.required": "Password is required.",

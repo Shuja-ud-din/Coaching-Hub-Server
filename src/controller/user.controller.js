@@ -30,11 +30,13 @@ const createNewUserHandler = async (req, res, next) => {
 
 const loginUserHandler = async (req, res, next) => {
   try {
-    const { email, phoneNumber, password } = req.body;
-    const user = await loginUser({ email, phoneNumber, password });
+    const { email, phoneNumber, password, role } = req.body;
+    const user = await loginUser({ email, phoneNumber, password, role });
+
     res.status(200).json({
       success: true,
       message: "user logged in successfully",
+      role: user.role,
       user: user.user,
       token: user.token,
     });
