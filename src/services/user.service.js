@@ -136,6 +136,10 @@ const loginUser = async ({ email, phoneNumber, password, role }) => {
     throw new ApiError(400, "Invalid credentials");
   }
 
+  if (!user.isValid) {
+    throw new ApiError(400, "Your account is pending approval");
+  }
+
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
     throw new ApiError(400, "Invalid credentials");
@@ -178,6 +182,7 @@ const loginUser = async ({ email, phoneNumber, password, role }) => {
     token,
   };
 };
+
 const verifyUser = async (otp, email) => {
   const user = await User.findOne({ email });
 
