@@ -36,3 +36,39 @@ export const toggleStatus = async (req, res) => {
     );
   }
 };
+
+export const getVersion = async (req, res) => {
+  try {
+    const { platform, version } = req.query;
+
+    if (!platform || !version) {
+      throw new ApiError(400, "Platform and version are required");
+    }
+
+    const appStatus = await AppStatus.findOne();
+    if (platform === "ios") {
+      res.status(200).json({
+        success: true,
+        message: "App version checked",
+        version: appStatus.iosVersion,
+        updateAvailable: version !== appStatus.iosVersion,
+        supported: version === appStatus.iosVersion,
+      });
+    } else if (platform === "android") {
+      res.status(200).json({
+        success: true,
+        message: "App version checked",
+        version: appStatus.androidVersion,
+        updateAvailable: version !== appStatus.androidVersion,
+        supported: version === appStatus.androidVersion,
+      });
+    } else {
+      throw new ApiError(400, "Invalid platform");
+    }
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || httpStatus.BAD_REQUEST,
+      error.message || "Error fetching version"
+    );
+  }
+};

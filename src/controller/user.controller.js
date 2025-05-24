@@ -1,4 +1,5 @@
 import { ApiError } from "../errors/ApiError.js";
+import User from "../models/userModel.js";
 import {
   createUser,
   forgetPassword,
@@ -14,7 +15,18 @@ import jwt from "jsonwebtoken";
 const createNewUserHandler = async (req, res, next) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
-    await createUser({ name, email, phoneNumber, password });
+    const acceptLanguage =
+      req.headers["Accept-Language"]?.split(",")[0] || "en";
+    const timezone = req.headers["timezone"] || "UTC";
+
+    await createUser({
+      name,
+      email,
+      phoneNumber,
+      password,
+      timezone,
+      language: acceptLanguage,
+    });
 
     res.status(201).json({
       success: true,
@@ -171,6 +183,59 @@ const resetPasswordHandler = async (req, res, next) => {
   }
 };
 
+const updateLanguageHandler = async (req, res) => {
+  try {
+    const { language } = req.body;
+    const { userId } = req.user;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(400, "User not found");
+    }
+
+    user.language = language;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Language updated successfully",
+    });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
+  }
+};
+
+const updateTimezoneHandler = async (req, res) => {
+  try {
+    const { timezone } = req.body;
+    const { userId } = req.user;
+
+    if (!timezone) {
+      throw new ApiError(400, "Timezone is required");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(400, "User not found");
+    }
+
+    user.timezone = timezone;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Timezone updated successfully",
+    });
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Internal server error"
+    );
+  }
+};
 export {
   createNewUserHandler,
   loginUserHandler,
@@ -179,4 +244,6 @@ export {
   forgetPasswordHandler,
   verifyForgetPasswordOTPHandler,
   resetPasswordHandler,
+  updateLanguageHandler,
+  updateTimezoneHandler,
 };

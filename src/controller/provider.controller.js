@@ -23,7 +23,7 @@ import User from "../models/userModel.js";
 const providerSignupHandler = async (req, res) => {
   try {
     const { body } = req;
-    const provider = await createUser({ role: "Provider", ...body });
+    const provider = await createUser({ role: "coach", ...body });
     const { certificates } = body;
 
     const certificatePromises = certificates.map(async (certificate) => {
@@ -51,6 +51,7 @@ const providerSignupHandler = async (req, res) => {
     );
   }
 };
+
 const createProviderHandler = async (req, res) => {
   try {
     const { body } = req;

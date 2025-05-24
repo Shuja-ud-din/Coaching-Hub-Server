@@ -10,7 +10,6 @@ import CPToken from "../models/CPToken.js";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
-import crypto from "crypto";
 
 const createUser = async ({
   name,
@@ -20,13 +19,13 @@ const createUser = async ({
   password,
   speciality,
   experience,
+  language,
+  timezone,
   about,
   workingDays,
   workingTimes,
   profilePicture,
   swarmLink,
-  timeZone,
-  language,
   sessionDuration,
   sessionPrice,
   countryOfResidence,
@@ -34,7 +33,7 @@ const createUser = async ({
   degreeName,
   institute,
   yearOfPassingDegree,
-  role = "Customer",
+  role = "coachee",
 }) => {
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
@@ -56,6 +55,8 @@ const createUser = async ({
     phoneNumber,
     otp,
     role,
+    language,
+    timezone,
   });
 
   // generate jwt token
@@ -86,7 +87,7 @@ const createUser = async ({
 
   //Notify Admin
   sendNotificationToAdmin("New User Registered", `${name} has registered`);
-  if (role === "Provider") {
+  if (role === "coach") {
     const provider = await Provider.create({
       user: user._id,
       speciality,
@@ -96,8 +97,6 @@ const createUser = async ({
       workingTimes,
       profilePicture,
       swarmLink,
-      timeZone,
-      language,
       sessionDuration,
       address,
       sessionPrice,

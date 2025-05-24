@@ -2,6 +2,7 @@ const PATH = {
   AUTH: "/auth",
   ADMIN: "/admin",
   PROVIDER: "/provider",
+  USER: "/user",
   UPLOAD: "/upload",
   APPOINTMENT: "/appointment",
   CUSTOMER: "/customer",

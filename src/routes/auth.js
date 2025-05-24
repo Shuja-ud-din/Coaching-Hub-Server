@@ -22,7 +22,7 @@ import {
   verifyForgetPasswordOTPBody,
 } from "../models/CPToken.js";
 import { providerSchema } from "../models/providerModel.js";
-import { createProviderHandler, providerSignupHandler } from "../controller/provider.controller.js";
+import { providerSignupHandler } from "../controller/provider.controller.js";
 
 const authRoutes = express.Router();
 

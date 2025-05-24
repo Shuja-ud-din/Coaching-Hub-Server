@@ -9,6 +9,7 @@ import { privateRoutes } from "./private.js";
 import customerRoutes from "./customer.js";
 import notificationsRoutes from "./notification.js";
 import appStatusRoutes from "./appStatus.js";
+import { userRoutes } from "./users.js";
 
 const routes = express.Router();
 
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: PATH.PROVIDER,
     route: providerRoutes,
+  },
+  {
+    path: PATH.USER,
+    route: userRoutes,
   },
   {
     path: PATH.UPLOAD,

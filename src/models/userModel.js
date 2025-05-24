@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import joi from "joi";
-import Joi from "joi";
 
 const schema = mongoose.Schema({
   name: {
@@ -23,7 +22,7 @@ const schema = mongoose.Schema({
   },
   role: {
     type: String,
-    default: "Customer",
+    default: "coachee",
   },
   otp: {
     type: String,
@@ -35,6 +34,14 @@ const schema = mongoose.Schema({
   profilePicture: {
     type: String,
     default: null,
+  },
+  language: {
+    type: String,
+    default: "en",
+  },
+  timezone: {
+    type: String,
+    default: "UTC",
   },
   notifications: {
     type: [
@@ -152,6 +159,27 @@ const verifyUserBody = joi.object({
   }),
 });
 
+const updateLanguageBody = joi.object({
+  language: joi.string().valid("en", "ar").required().messages({
+    "string.empty": "Language is required.",
+    "any.required": "Language is required.",
+    "string.valid": "Language must be either en or ar.",
+  }),
+});
+
+const updateTimezoneBody = joi.object({
+  timezone: joi
+    .string()
+    .valid("UTC", "Asia/Karachi", "Asia/Dubai")
+    .required()
+    .messages({
+      "string.empty": "Timezone is required.",
+      "any.required": "Timezone is required.",
+      "string.valid":
+        "Timezone must be either UTC, Asia/Karachi, or Asia/Dubai.",
+    }),
+});
+
 export default User;
 export {
   userSchema,
@@ -160,4 +188,6 @@ export {
   toggleValidityBody,
   verifyUserBody,
   generateOTPBody,
+  updateLanguageBody,
+  updateTimezoneBody,
 };
