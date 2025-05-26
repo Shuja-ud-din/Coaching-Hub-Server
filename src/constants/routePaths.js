@@ -9,6 +9,7 @@ const PATH = {
   NOTIFICATION: "/notifications",
   PRIVATE: "/private",
   APPSTATUS: "/app",
+  APPVERSION: "/appVersion",
 };
 
 export { PATH };

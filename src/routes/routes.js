@@ -10,6 +10,7 @@ import customerRoutes from "./customer.js";
 import notificationsRoutes from "./notification.js";
 import appStatusRoutes from "./appStatus.js";
 import { userRoutes } from "./users.js";
+import appVersionRoutes from "./appVersion.js";
 
 const routes = express.Router();
 
@@ -53,6 +54,10 @@ const defaultRoutes = [
   {
     path: PATH.APPSTATUS,
     route: appStatusRoutes,
+  },
+  {
+    path: PATH.APPVERSION,
+    route: appVersionRoutes,
   },
 ];
 

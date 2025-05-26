@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { env } from "../config/env.js";
 import { seedAdmins } from "./admin/adminSeeder.js";
-import { seedAppStatus } from "./appStatus.js";
+import { seedAppData } from "./app/appSeeder.js";
 
 const { MONGO_URL } = env;
 
@@ -12,7 +12,7 @@ const seedDatabase = async () => {
       console.log("Connected to Mongo DB");
 
       // await seedAdmins();
-      await seedAppStatus();
+      await seedAppData();
     })
     .catch((err) => {
       console.log("Something went wrong while seeding"), JSON.stringify(err);

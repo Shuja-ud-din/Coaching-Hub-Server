@@ -1,7 +1,12 @@
 import express from "express";
 import {
   checkStatus,
-  getVersion,
+  getCategories,
+  getCities,
+  getCountries,
+  getJobTitles,
+  getLanguages,
+  getTimezones,
   toggleStatus,
 } from "../controller/appStatus.controller.js";
 import { catchAsync } from "../utils/catchAsync.js";
@@ -12,6 +17,16 @@ appStatusRoutes.put("/toggle-status", catchAsync(toggleStatus));
 
 appStatusRoutes.get("/status", catchAsync(checkStatus));
 
-appStatusRoutes.get("/version", catchAsync(getVersion));
+appStatusRoutes.get("/timezones", catchAsync(getTimezones));
+
+appStatusRoutes.get("/languages", catchAsync(getLanguages));
+
+appStatusRoutes.get("/countries", catchAsync(getCountries));
+
+appStatusRoutes.get("/cities", catchAsync(getCities));
+
+appStatusRoutes.get("/job-titles", catchAsync(getJobTitles));
+
+appStatusRoutes.get("/categories", catchAsync(getCategories));
 
 export default appStatusRoutes;

@@ -38,26 +38,42 @@ const createUser = async ({
   const emailExists = await User.findOne({ email });
   const phNoExists = await User.findOne({ phoneNumber });
 
-  if (emailExists || phNoExists) {
-    throw new Error(
-      `${emailExists ? "Email" : "Phone number"} already taken`,
-      409
-    );
-  }
-
   const encryptedPassword = await bcrypt.hash(password, 10);
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-  const user = await User.create({
-    name,
-    email,
-    password: encryptedPassword,
-    phoneNumber,
-    otp,
-    role,
-    language,
-    timezone,
-  });
+  let user = null;
+
+  if (emailExists || phNoExists) {
+    emailExists.name = name;
+    emailExists.email = email;
+    emailExists.phoneNumber = phoneNumber;
+    emailExists.language = language;
+    emailExists.timezone = timezone;
+    emailExists.password = encryptedPassword;
+    emailExists.otp = otp;
+    await emailExists.save();
+
+    if (emailExists.role === "coachee") {
+      const customer = await Customer.findOne({ user: emailExists._id });
+      await customer.deleteOne();
+    } else {
+      const provider = await Provider.findOne({ user: emailExists._id });
+      await provider.deleteOne();
+    }
+
+    user = emailExists;
+  } else {
+    user = await User.create({
+      name,
+      email,
+      password: encryptedPassword,
+      phoneNumber,
+      otp,
+      role,
+      language,
+      timezone,
+    });
+  }
 
   // generate jwt token
   const token = jsonwebtoken.sign(
