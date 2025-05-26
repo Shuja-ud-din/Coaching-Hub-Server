@@ -10,6 +10,7 @@ import CPToken from "../models/CPToken.js";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { ApiError } from "../errors/ApiError.js";
+import { t } from "../utils/i18n.js";
 
 const createUser = async ({
   name,
@@ -35,13 +36,17 @@ const createUser = async ({
   yearOfPassingDegree,
   role = "coachee",
 }) => {
-  const emailExists = await User.findOne({ email });
-  const phNoExists = await User.findOne({ phoneNumber });
+  let emailExists = await User.findOne({ email });
+  let phNoExists = await User.findOne({ phoneNumber });
 
   const encryptedPassword = await bcrypt.hash(password, 10);
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
   let user = null;
+
+  if (phNoExists) {
+    emailExists = phNoExists;
+  }
 
   if (emailExists || phNoExists) {
     emailExists.name = name;
@@ -142,23 +147,23 @@ const createUser = async ({
   }
 };
 
-const loginUser = async ({ email, phoneNumber, password, role }) => {
+const loginUser = async ({ email, phoneNumber, password, role, lang }) => {
   const user = await User.findOne({
     $or: [{ email }, { phoneNumber }],
     role: role,
   });
 
   if (!user) {
-    throw new ApiError(400, "Invalid credentials");
+    throw new ApiError(400, t("INVALID_CREDENTIALS", lang));
   }
 
   if (!user.isValid) {
-    throw new ApiError(400, "Your account is pending approval");
+    throw new ApiError(400, t("ACCOUNT_PENDING_APPROVAL", lang));
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    throw new ApiError(400, "Invalid credentials");
+    throw new ApiError(400, t("INVALID_CREDENTIALS", lang));
   }
 
   const token = jsonwebtoken.sign(
@@ -176,9 +181,9 @@ const loginUser = async ({ email, phoneNumber, password, role }) => {
   } else if (user.role === "coach") {
     roleUser = await Provider.findOne({ user: user._id });
     if (roleUser.status === "Pending") {
-      throw new ApiError(400, "Your account is pending approval");
+      throw new ApiError(400, t("ACCOUNT_PENDING_APPROVAL", lang));
     } else if (roleUser.status === "Blocked") {
-      throw new ApiError(400, "Your account is blocked");
+      throw new ApiError(400, t("ACCOUNT_BLOCKED", lang));
     }
   } else {
     roleUser = await Admin.findOne({ user: user._id });
@@ -199,15 +204,16 @@ const loginUser = async ({ email, phoneNumber, password, role }) => {
   };
 };
 
-const verifyUser = async (otp, email) => {
+const verifyUser = async (otp, email, lang) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error("User Not Found", 400);
+    throw new ApiError(400, t("USER_NOT_FOUND", lang));
   }
 
   if (user.otp !== otp) {
-    throw new Error("Invalid OTP", 400);
+    console.log(user.otp, otp);
+    throw new ApiError(400, t("INVALID_OTP", lang));
   }
 
   user.isValid = true;
@@ -228,11 +234,11 @@ const verifyUser = async (otp, email) => {
   };
 };
 
-const generateOTP = async ({ email }) => {
+const generateOTP = async ({ email, lang }) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error("User Not Found", 400);
+    throw new ApiError(400, t("USER_NOT_FOUND", lang));
   }
 
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -243,11 +249,11 @@ const generateOTP = async ({ email }) => {
   return { userEmail: user.email, otp };
 };
 
-const forgetPassword = async ({ email }) => {
+const forgetPassword = async ({ email, lang }) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error("User Not Found", 400);
+    throw new ApiError(400, t("USER_NOT_FOUND", lang));
   }
 
   if (user.role === "Admin") {
@@ -294,21 +300,21 @@ const forgetPassword = async ({ email }) => {
   return user._id.toString();
 };
 
-const verifyForgetPasswordOTP = async ({ otp, email }) => {
+const verifyForgetPasswordOTP = async ({ otp, email, lang }) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("User Not Found", 400);
+    throw new ApiError(400, t("USER_NOT_FOUND", lang));
   }
 
   const cpToken = await CPToken.findOne({ userId: user._id });
   if (!cpToken) {
-    throw new Error("Invalid OTP", 400);
+    throw new ApiError(400, t("INVALID_OTP", lang));
   }
   if (cpToken.otp !== otp) {
-    throw new Error("Invalid OTP", 400);
+    throw new ApiError(400, t("INVALID_OTP", lang));
   }
   if (cpToken.expirationDate < new Date()) {
-    throw new Error("OTP Expired", 400);
+    throw new ApiError(400, t("OTP_EXPIRED", lang));
   }
 
   const token = jsonwebtoken.sign(
@@ -322,19 +328,19 @@ const verifyForgetPasswordOTP = async ({ otp, email }) => {
   return { userId: user._id, token };
 };
 
-const resetPassword = async ({ userId, password }) => {
+const resetPassword = async ({ userId, password, lang }) => {
   const cpToken = await CPToken.findOne({ userId });
 
   if (!cpToken) {
-    throw new Error("Invalid Token", 400);
+    throw new ApiError(400, t("INVALID_TOKEN", lang));
   }
   if (cpToken.expirationDate < new Date()) {
-    throw new Error("Token Expired", 400);
+    throw new ApiError(400, t("TOKEN_EXPIRED", lang));
   }
 
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error("User Not Found", 400);
+    throw new ApiError(400, t("USER_NOT_FOUND", lang));
   }
 
   const encryptedPassword = await bcrypt.hash(password, 10);

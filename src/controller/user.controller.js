@@ -11,12 +11,13 @@ import {
 } from "../services/user.service.js";
 import sendMail from "../utils/sendMail.js";
 import jwt from "jsonwebtoken";
+import { t } from "../utils/i18n.js";
 
 const createNewUserHandler = async (req, res, next) => {
+  const acceptLanguage = req.headers["Accept-Language"]?.split(",")[0] || "en";
   try {
     const { name, email, phoneNumber, password } = req.body;
-    const acceptLanguage =
-      req.headers["Accept-Language"]?.split(",")[0] || "en";
+
     const timezone = req.headers["timezone"] || "UTC";
 
     await createUser({
@@ -30,24 +31,27 @@ const createNewUserHandler = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: "OTP has been sent, Please check your email",
+      message: t("OTP_SENT_MESSAGE", acceptLanguage),
     });
   } catch (error) {
+    console.log(error);
+
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", acceptLanguage)
     );
   }
 };
 
 const loginUserHandler = async (req, res, next) => {
+  const lang = req.language;
   try {
     const { email, phoneNumber, password, role } = req.body;
-    const user = await loginUser({ email, phoneNumber, password, role });
+    const user = await loginUser({ email, phoneNumber, password, role, lang });
 
     res.status(200).json({
       success: true,
-      message: "user logged in successfully",
+      message: t("LOGIN_SUCCESS", lang),
       role: user.role,
       user: user.user,
       token: user.token,
@@ -55,24 +59,26 @@ const loginUserHandler = async (req, res, next) => {
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
+
 const userVerificationHandler = async (req, res, next) => {
+  const lang = req.language;
   try {
     const { otp, email } = req.body;
-    const { user, token } = await verifyUser(otp, email);
+    const { user, token } = await verifyUser(otp, email, lang);
 
     res.status(200).json({
       success: true,
-      message: "User Logged in Successfully",
+      message: t("USER_LOGGED_IN_SUCCESSFULLY", lang),
       token,
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
@@ -80,8 +86,8 @@ const userVerificationHandler = async (req, res, next) => {
 const generateOTPHandler = async (req, res, next) => {
   try {
     const { email } = req.body;
-
-    const { userEmail, otp } = await generateOTP({ email });
+    const lang = req.language;
+    const { userEmail, otp } = await generateOTP({ email, lang });
     sendMail(
       {
         to: userEmail,
@@ -110,55 +116,58 @@ const generateOTPHandler = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "OTP Sent Successfully",
+      message: t("OTP_SENT_MESSAGE", lang),
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
 
 const forgetPasswordHandler = async (req, res, next) => {
+  const lang = req.language;
   try {
     const { email } = req.body;
-
-    await forgetPassword({ email });
+    await forgetPassword({ email, lang });
 
     res.status(200).json({
       success: true,
-      message: "OTP Sent Successfully",
+      message: t("OTP_SENT_MESSAGE", lang),
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
-const verifyForgetPasswordOTPHandler = async (req, res, next) => {
+const verifyForgetPasswordOTPHandler = async (req, res) => {
+  const lang = req.language;
   try {
     const { otp, email } = req.body;
     const { token } = await verifyForgetPasswordOTP({
       otp,
       email,
+      lang,
     });
 
     res.status(200).json({
       success: true,
-      message: "OTP Verified Successfully",
+      message: t("OTP_VERIFIED_SUCCESSFULLY", lang),
       token,
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
 
-const resetPasswordHandler = async (req, res, next) => {
+const resetPasswordHandler = async (req, res) => {
+  const lang = req.language;
   try {
     const { password } = req.body;
     const token =
@@ -169,28 +178,29 @@ const resetPasswordHandler = async (req, res, next) => {
     await resetPassword({
       userId,
       password,
+      lang,
     });
 
     res.status(200).json({
       success: true,
-      message: "Password Reset Successfully",
+      message: t("PASSWORD_RESET_SUCCESSFULLY", lang),
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };
 
 const updateLanguageHandler = async (req, res) => {
+  const { language } = req.body;
   try {
-    const { language } = req.body;
     const { userId } = req.user;
 
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(400, "User not found");
+      throw new ApiError(400, t("USER_NOT_FOUND", language));
     }
 
     user.language = language;
@@ -198,12 +208,12 @@ const updateLanguageHandler = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Language updated successfully",
+      message: t("LANGUAGE_UPDATED_SUCCESSFULLY", language),
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", language)
     );
   }
 };
@@ -214,12 +224,12 @@ const updateTimezoneHandler = async (req, res) => {
     const { userId } = req.user;
 
     if (!timezone) {
-      throw new ApiError(400, "Timezone is required");
+      throw new ApiError(400, t("TIMEZONE_REQUIRED"));
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      throw new ApiError(400, "User not found");
+      throw new ApiError(400, t("USER_NOT_FOUND"));
     }
 
     user.timezone = timezone;
@@ -227,12 +237,12 @@ const updateTimezoneHandler = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Timezone updated successfully",
+      message: t("TIMEZONE_UPDATED_SUCCESSFULLY", lang),
     });
   } catch (error) {
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Internal server error"
+      error.message || t("INTERNAL_SERVER_ERROR", lang)
     );
   }
 };

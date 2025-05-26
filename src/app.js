@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import connectDB from "./config/ConnectDB.js";
 import "./config/env.js";
+import languageMiddleware from "./middlewares/language.js";
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(express.static("public"));
 connectDB();
 
 app.use(express.json());
+
+app.use(languageMiddleware);
 
 app.use(express.urlencoded({ extended: true }));
 
