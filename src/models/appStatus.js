@@ -21,48 +21,57 @@ const schema = new mongoose.Schema({
   },
   timezones: {
     type: [String],
-    default: ["Africa/Cairo", "America/New York"],
+    default: [],
   },
+
   languages: {
     type: [
       {
         name: {
-          type: String,
+          en: { type: String },
+          ar: { type: String },
         },
       },
     ],
     default: [
-      { id: "1", name: "English" },
-      { id: "2", name: "Arabic" },
+      { name: { en: "English", ar: "الإنجليزية" } },
+      { name: { en: "Arabic", ar: "العربية" } },
     ],
   },
   countries: {
     type: [
       {
-        name: { type: String },
+        name: { en: { type: String }, ar: { type: String } },
       },
     ],
-    default: [{ name: "United Arab Emirates" }],
+    default: [
+      { name: { en: "United Arab Emirates", ar: "الإمارات العربية المتحدة" } },
+    ],
   },
   cities: {
     type: [
       {
-        name: { type: String },
+        name: { en: { type: String }, ar: { type: String } },
       },
     ],
-    default: [{ name: "Dubai" }],
+    default: [{ name: { en: "Dubai", ar: "دبي" } }],
   },
   jobTitles: {
-    type: [String],
-    default: ["Senior Manager", "Project Manager"],
+    type: [{ name: { en: { type: String }, ar: { type: String } } }],
+    default: [
+      {
+        name: { en: "Senior Manage", ar: "مدير أول" },
+        name: { en: "Project Manager", ar: "مدير مشروع" },
+      },
+    ],
   },
   categories: {
     type: [
       {
-        name: { type: String },
+        name: { en: { type: String }, ar: { type: String } },
       },
     ],
-    default: [{ name: "Life Coach" }, { name: "Career Coach" }],
+    default: [],
   },
 });
 

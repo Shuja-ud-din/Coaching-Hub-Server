@@ -16,4 +16,10 @@ export default {
   TIMEZONE_REQUIRED: "Timezone is required",
   TIMEZONE_UPDATED_SUCCESSFULLY: "Timezone updated successfully",
   USER_LOGGED_IN_SUCCESSFULLY: "User logged in successfully",
+  TIMEZONES_FETCHED_SUCCESSFULLY: "Timezones fetched successfully",
+  LANGUAGES_FETCHED_SUCCESSFULLY: "Languages fetched successfully",
+  COUNTRIES_FETCHED_SUCCESSFULLY: "Countries fetched successfully",
+  CITIES_FETCHED_SUCCESSFULLY: "Cities fetched successfully",
+  JOBTITLES_FETCHED_SUCCESSFULLY: "Job titles fetched successfully",
+  CATEGORIES_FETCHED_SUCCESSFULLY: "Categories fetched successfully",
 };
