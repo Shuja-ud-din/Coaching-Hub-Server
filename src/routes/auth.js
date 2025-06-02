@@ -23,12 +23,14 @@ import {
 } from "../models/CPToken.js";
 import { providerSchema } from "../models/providerModel.js";
 import { providerSignupHandler } from "../controller/provider.controller.js";
+import languageMiddleware from "../middlewares/language.js";
 
 const authRoutes = express.Router();
 
 authRoutes.post(
   "/register",
   bodyValidator(userSchema),
+  languageMiddleware,
   catchAsync(createNewUserHandler)
 );
 
@@ -40,31 +42,37 @@ authRoutes.post(
 authRoutes.post(
   "/login",
   bodyValidator(loginSchema),
+  languageMiddleware,
   catchAsync(loginUserHandler)
 );
 authRoutes.post(
   "/verify",
   bodyValidator(verifyUserBody),
+  languageMiddleware,
   catchAsync(userVerificationHandler)
 );
 authRoutes.post(
   "/generateOTP",
   bodyValidator(generateOTPBody),
+  languageMiddleware,
   catchAsync(generateOTPHandler)
 );
 authRoutes.post(
   "/forgetPassword",
   bodyValidator(forgetPasswordBody),
+  languageMiddleware,
   catchAsync(forgetPasswordHandler)
 );
 authRoutes.post(
   "/forgetPassword/verifyOTP",
   bodyValidator(verifyForgetPasswordOTPBody),
+  languageMiddleware,
   catchAsync(verifyForgetPasswordOTPHandler)
 );
 authRoutes.post(
   "/resetPassword",
   bodyValidator(resetPasswordBody),
+  languageMiddleware,
   catchAsync(resetPasswordHandler)
 );
 

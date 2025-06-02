@@ -20,22 +20,8 @@ const schema = new mongoose.Schema({
     default: "1.0.0",
   },
   timezones: {
-    type: [
-      {
-        name: {
-          en: { type: String },
-          ar: { type: String },
-        },
-      },
-    ],
-    default: [
-      {
-        name: { en: "Cairo (GMT+2)", ar: "القاهرة (ت.غ +2)" },
-      },
-      {
-        name: { en: "New York (GMT-4)", ar: "نيويورك (ت.غ -4)" },
-      },
-    ],
+    type: [String],
+    default: [],
   },
 
   languages: {
@@ -58,7 +44,9 @@ const schema = new mongoose.Schema({
         name: { en: { type: String }, ar: { type: String } },
       },
     ],
-    default: [{ name: { en: "United Arab Emirates", ar: "الإمارات العربية المتحدة" } }],
+    default: [
+      { name: { en: "United Arab Emirates", ar: "الإمارات العربية المتحدة" } },
+    ],
   },
   cities: {
     type: [
@@ -74,7 +62,7 @@ const schema = new mongoose.Schema({
       {
         name: { en: "Senior Manage", ar: "مدير أول" },
         name: { en: "Project Manager", ar: "مدير مشروع" },
-      }
+      },
     ],
   },
   categories: {
@@ -83,12 +71,7 @@ const schema = new mongoose.Schema({
         name: { en: { type: String }, ar: { type: String } },
       },
     ],
-    default: [{
-      name: { en: "Life Coach", ar: "مدرب حياة" },
-      name: { en: "Career Coach", ar: "مدرب مهني" },
-
-
-    }],
+    default: [],
   },
 });
 

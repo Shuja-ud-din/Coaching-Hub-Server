@@ -1,5 +1,5 @@
 import App from "../../models/appStatus.js";
-
+import { TIMEZONES, CATEGORIES, LANGUAGES, JOBTITLES } from "./appData.js";
 export const seedAppData = async () => {
   console.log("Seeding App Data...");
 
@@ -9,24 +9,38 @@ export const seedAppData = async () => {
       version: "1.0.0",
       iosVersion: "1.0.0",
       androidVersion: "1.0.0",
-      timezones: ["Africa/Cairo", "America/New York"],
-      languages: [{ name: "English" }, { name: "Arabic" }],
+      timezones: TIMEZONES,
+      languages: LANGUAGES,
       countries: [
-        { name: "United Arab Emirates" },
         {
-          name: "Egypt",
+          name: {
+            en: "United Arab Emirates",
+            ar: "الإمارة العربية المتحدة",
+          },
+        },
+        {
+          name: {
+            en: "Egypt",
+            ar: "مصر",
+          },
         },
       ],
-      cities: [{ name: "Dubai" }, { name: "Cairo" }],
-      jobTitles: ["Senior Manager", "Project Manager"],
-      categories: [
-        { name: "Life Coach" },
-        { name: "Career Coach" },
-        { name: "Relationship Coach" },
-        { name: "Parenting Coach" },
-        { name: "Health Coach" },
-        { name: "Business Coach" },
+      cities: [
+        {
+          name: {
+            en: "Dubai",
+            ar: "دبي",
+          },
+        },
+        {
+          name: {
+            en: "Cairo",
+            ar: "القاهرة",
+          },
+        },
       ],
+      jobTitles: JOBTITLES,
+      categories: CATEGORIES,
     },
     { new: true, upsert: true }
   );

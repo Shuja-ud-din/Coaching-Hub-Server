@@ -16,4 +16,10 @@ export default {
   TIMEZONE_REQUIRED: "الوقت الجغرافي مطلوب",
   TIMEZONE_UPDATED_SUCCESSFULLY: "تم تحديث الوقت الجغرافي بنجاح",
   USER_LOGGED_IN_SUCCESSFULLY: "تم تسجيل الدخول بنجاح",
+  TIMEZONES_FETCHED_SUCCESSFULLY: "تم جلب الأوقات الجغرافية بنجاح",
+  LANGUAGES_FETCHED_SUCCESSFULLY: "تم جلب اللغات بنجاح",
+  COUNTRIES_FETCHED_SUCCESSFULLY: "تم جلب الدول بنجاح",
+  CITIES_FETCHED_SUCCESSFULLY: "تم جلب المدن بنجاح",
+  JOBTITLES_FETCHED_SUCCESSFULLY: "تم جلب المناصب بنجاح",
+  CATEGORIES_FETCHED_SUCCESSFULLY: "تم جلب التصنيفات بنجاح",
 };
