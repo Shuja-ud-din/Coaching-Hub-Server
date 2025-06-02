@@ -75,11 +75,18 @@ export const getVersion = async (req, res) => {
 
 export const getTimezones = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
+
+    const timezones =
+      app?.timezones.map((tz) => ({
+        name: tz.name[lang] || tz.name.en,
+      })) || [];
+
     res.status(200).json({
       success: true,
       message: "Timezones fetched successfully",
-      timezones: app?.timezones || [],
+      timezones,
     });
   } catch (error) {
     throw new ApiError(
@@ -91,13 +98,13 @@ export const getTimezones = async (req, res) => {
 
 export const getLanguages = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
 
-    const languages =
-      app?.languages.map((language) => ({
-        id: language._id,
-        name: language.name,
-      })) || [];
+    const languages = (app?.languages || []).map((language) => ({
+      id: language._id,
+      name: language.name?.[lang] || language.name?.en || "",
+    }));
 
     res.status(200).json({
       success: true,
@@ -114,12 +121,13 @@ export const getLanguages = async (req, res) => {
 
 export const getCountries = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
 
     const countries =
       app?.countries.map((country) => ({
         id: country._id,
-        name: country.name,
+        name: country.name[lang] || country.name.en,
       })) || [];
 
     res.status(200).json({
@@ -137,11 +145,13 @@ export const getCountries = async (req, res) => {
 
 export const getCities = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
+
     const cities =
       app?.cities.map((city) => ({
         id: city._id,
-        name: city.name,
+        name: city.name[lang] || city.name.en,
       })) || [];
 
     res.status(200).json({
@@ -159,8 +169,15 @@ export const getCities = async (req, res) => {
 
 export const getJobTitles = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
-    const jobTitles = app?.jobTitles || [];
+
+    const jobTitles =
+      app?.jobTitles.map((job) => ({
+        id: job._id,
+        name: job.name[lang] || job.name.en,
+      })) || [];
+
     res.status(200).json({
       success: true,
       message: "Job titles fetched successfully",
@@ -176,11 +193,13 @@ export const getJobTitles = async (req, res) => {
 
 export const getCategories = async (req, res) => {
   try {
+    const lang = req.headers.lang || "en";
     const app = await App.findOne();
+
     const categories =
-      app?.categories.map((category) => ({
-        id: category._id,
-        name: category.name,
+      app?.categories.map((cat) => ({
+        id: cat._id,
+        name: cat.name[lang] || cat.name.en,
       })) || [];
 
     res.status(200).json({
